@@ -15,9 +15,11 @@ biocViews:
 Imports: 
     ape,
     Biostrings,
+    dplyr,
     GenomicFeatures,
     ggplot2,
     ggtree,
+    magrittr,
     msa,
     phangorn,
     rentrez,
