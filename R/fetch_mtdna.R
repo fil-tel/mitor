@@ -23,7 +23,7 @@ fetch_seq <- function(query, dir_path, n=NULL){
       if(n-(seq_start-1)<5000){
         max=n-(seq_start-1)
       }
-      recs <- entrez_fetch(db="nuccore", web_history=snail_coi$web_history,
+      recs <- entrez_fetch(db="nuccore", web_history=search$web_history,
                            rettype="fasta", retmax=max, retstart=seq_start-1)
       write(recs, file=paste0(path, seq_start, "-", seq_start+max-1, ".fa"))
       cat(seq_start+max-1, "sequences downloaded\r")
