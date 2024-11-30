@@ -1,3 +1,13 @@
+#' fetch_seq
+#'
+#' @param query NCBI query to download
+#' @param dir_path path where to save the files
+#' @param n number of sequences to be download
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples ciao
 fetch_seq <- function(query, dir_path, n=NULL){
 
   search <- entrez_search(db = "nuccore",term = query, use_history = TRUE)
