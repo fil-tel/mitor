@@ -7,7 +7,7 @@
 #' @return nothing
 #' @export
 #'
-#' @examples ciao
+#' @examples ceee
 fetch_seq <- function(query, dir_path, n=NULL){
 
   search <- entrez_search(db = "nuccore",term = query, use_history = TRUE)
