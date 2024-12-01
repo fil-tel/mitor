@@ -2,23 +2,55 @@
 % Please edit documentation in R/fetch_mtdna.R
 \name{fetch_seq}
 \alias{fetch_seq}
-\title{fetch_seq}
+\title{Fetching Sequences From The NCBI Database}
 \usage{
-fetch_seq(query, dir_path, n = NULL)
+fetch_seq(
+  query,
+  dir_path,
+  filename,
+  create = TRUE,
+  n = NULL,
+  db = "nuccore",
+  gb = FALSE
+)
 }
 \arguments{
-\item{query}{NCBI query to download}
+\item{query}{String. NCBI query to search.
 
-\item{dir_path}{path where to save the files}
+A documentation for how NCBI querys are structured is available \href{https://www.ncbi.nlm.nih.gov/books/NBK44863/}{here}.
+It is helpful to first manually try different querys on the \href{https://www.ncbi.nlm.nih.gov/}{NCBI websites} to understand which suites better for your goal.}
 
-\item{n}{number of sequences to be download}
-}
-\value{
-nothing
+\item{dir_path}{String. Path of the directory where to save the files.
+
+It is essential to specify whether the directory is new or it already exists using the argument \code{create}.}
+
+\item{filename}{String. Name you want to give to the file.}
+
+\item{create}{Boolean that specify whether to create a new directory (TRUE) or to use an already existence one (FALSE).
+
+IMPORTANT: If TRUE, but the directory already exist, it will deleted with all its content and recreated.}
+
+\item{n}{Integer. Number of sequences to be downloaded. DEFAULT: all the records corresponding to the query.
+\itemize{
+\item If n is smaller than the number of records corresponding to the query, the first n records will be downloaded.
+\item If n is greater than the number of records corresponding to the query, all the records will be downloaded.
+}}
+
+\item{db}{String. NCBI database from where the sequences have to be downloaded.
+
+The available databases can be found \href{https://cran.r-project.org/web/packages/rentrez/vignettes/rentrez_tutorial.html}{here}.}
+
+\item{gb}{Boolean. If TRUE, the the genbank file will be download together with the FASTA.}
 }
 \description{
-fetch_seq
+\code{fetch_seq()} fetches sequences from the specified NCBI database and save them in a specified directory on your machine.
+The sequences will be downloaded and stored in a FASTA files with maximum 5000 sequences in each. If the argument \code{gb} is passed the genbank file will also be
+downloaded.
 }
 \examples{
-ciao
+ref_query <- "NC_012920"
+ref_path <- "data/mtdna/ref"
+fetch_seq(ref_query, ref_path, filename = "ref", gb = TRUE)
+
+
 }

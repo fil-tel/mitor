@@ -1,19 +1,52 @@
-#' fetch_seq
+#' Fetching Sequences From The NCBI Database
 #'
-#' @param query NCBI query to download
-#' @param dir_path path where to save the files
-#' @param n number of sequences to be download
+#' `fetch_seq()` fetches sequences from the specified NCBI database and save them in a specified directory on your machine.
+#' The sequences will be downloaded and stored in a FASTA files with maximum 5000 sequences in each. If the argument `gb` is passed the genbank file will also be
+#' downloaded.
 #'
-#' @return nothing
+#' @param query String. NCBI query to search.
+#'
+#'  A documentation for how NCBI querys are structured is available [here](https://www.ncbi.nlm.nih.gov/books/NBK44863/).
+#'  It is helpful to first manually try different querys on the [NCBI websites](https://www.ncbi.nlm.nih.gov/) to understand which suites better for your goal.
+#' @param dir_path String. Path of the directory where to save the files.
+#'
+#'  It is essential to specify whether the directory is new or it already exists using the argument `create`.
+#' @param n Integer. Number of sequences to be downloaded. DEFAULT: all the records corresponding to the query.
+#'
+#'  * If n is smaller than the number of records corresponding to the query, the first n records will be downloaded.
+#'  * If n is greater than the number of records corresponding to the query, all the records will be downloaded.
+#' @param create Boolean that specify whether to create a new directory (TRUE) or to use an already existence one (FALSE).
+#'
+#'  IMPORTANT: If TRUE, but the directory already exist, it will deleted with all its content and recreated.
+#' @param db String. NCBI database from where the sequences have to be downloaded.
+#'
+#'  The available databases can be found [here](https://cran.r-project.org/web/packages/rentrez/vignettes/rentrez_tutorial.html).
+#' @param gb Boolean. If TRUE, the the genbank file will be download together with the FASTA.
+#' @param filename String. Name you want to give to the file.
+#'
+#' @examples
+#' ref_query <- "NC_012920"
+#' ref_path <- "data/mtdna/ref"
+#' fetch_seq(ref_query, ref_path, filename = "ref", gb = TRUE)
+#'
+#'
 #' @export
 #'
-#' @examples ceee
-fetch_seq <- function(query, dir_path, n=NULL){
+fetch_seq <- function(query, dir_path, filename, create=TRUE, n=NULL, db = "nuccore", gb = FALSE){
 
-  search <- entrez_search(db = "nuccore",term = query, use_history = TRUE)
+  if(create && file.exists(dir_path)){
+    cat("Warning! The directory alredy exists. All its content will be deleted.", '\n')
+    cont <- readline('Do you wish to continue? [y/n] ')
+    if(cont != 'y') stop('Aborted by user')
+  }
 
-  unlink(dir_path, recursive = TRUE, force = TRUE)
-  dir.create(dir_path, recursive = TRUE)
+  search <- entrez_search(db = db,term = query, use_history = TRUE)
+
+  if (create) {
+    unlink(dir_path, recursive = TRUE, force = TRUE)
+    dir.create(dir_path, recursive = TRUE)
+  }
+
 
   if (is.null(n)) {
     n=search$count
@@ -23,66 +56,32 @@ fetch_seq <- function(query, dir_path, n=NULL){
     n=search$count
   }
 
-  # this condition it's needed in the case where we wanted to download a lot of sequences,
-  # it's much more reasonable and faster to download them in chunks of fasta file due to limitations of the server,
-  # we won't download the genebank file though
-
-  if (n>=5000) {
-    for( seq_start in seq(1,n,5000)){
-      max=5000
-      if(n-(seq_start-1)<5000){
-        max=n-(seq_start-1)
-      }
-      recs <- entrez_fetch(db="nuccore", web_history=search$web_history,
-                           rettype="fasta", retmax=max, retstart=seq_start-1)
-      write(recs, file=paste0(path, seq_start, "-", seq_start+max-1, ".fa"))
-      cat(seq_start+max-1, "sequences downloaded\r")
+  for (seq_start in seq(1, n, 5000)) {
+    max = 5000
+    if (n - (seq_start - 1) < 5000) {
+      max = n - (seq_start - 1)
     }
-  }
-
-  else{
-    for (i in seq(n)) {
-      cat(sprintf("Processing sequence [%d/%d]\n", i, n))
-
-      # fetch a GenBank file in a string format
-      gb_txt <- entrez_fetch(db = "nuccore", web_history = search$web_history,
-                             rettype = "gb", retmax = 1, retstart = i-1)
-
-      cat("  - Fetched GenBank file from the internet\n")
-
-      # extract accession # from the file for saving the data
-      accession_id <-
-        gb_txt %>%
-        strsplit("\n") %>%
-        { grep("ACCESSION", .[[1]], value = TRUE, ignore.case = TRUE) } %>%
-        strsplit(" +") %>%
-        { .[[1]][2] } # "ACCESSION <accession ID> <potentially other stuff>
-
-      cat(sprintf("  - Extracted accession code %s\n", accession_id))
-
-      gb_file <- file.path(dir_path, paste0(accession_id, ".gb"))
-      fa_file <- file.path(dir_path, paste0(accession_id, ".fa"))
-
-      cat(sprintf("  - Saving GenBank file to %s\n", gb_file))
-
-      # write the GenBank to a file
-      write(gb_txt, file = gb_file)
-
-      cat(sprintf("  - Converting GenBank to FASTA file %s\n", fa_file))
-
-      # convert to FASTA
-      tryCatch(
-        gb2fasta(gb_file, fa_file),
-        error = function(e) {
-          if (e$message == "argument of length 0") {
-            cat("  - Empty FASTA string, skipping this record\n")
-            unlink(gb_file)
-            unlink(fa_file)
-          } else {
-            stop("Unknown error!", .call = FALSE)
-          }
-        }
+    recs_fa <-
+      entrez_fetch(
+        db = db,
+        web_history = search$web_history,
+        rettype = "fasta",
+        retmax = max,
+        retstart = seq_start - 1
       )
+    write(recs_fa, file = paste0(dir_path,  "/", filename, ".fa"), append = TRUE)
+    if(gb){
+      recs_gb <-
+        entrez_fetch(
+          db = db,
+          web_history = search$web_history,
+          rettype = "gb",
+          retmax = max,
+          retstart = seq_start - 1
+        )
+      write(recs_gb, file = paste0(dir_path, "/", filename, ".gb"), append = TRUE)
     }
+    cat(seq_start + max - 1, "sequences downloaded\r")
   }
+
 }
