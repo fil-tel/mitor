@@ -65,7 +65,6 @@ download_zip <- function(dir, name, download_code, list){
 #' @param name String. Name of the zip file containing the prediction to be created.
 #' @param dir String. Path of the directory where to save the zip file with the prediction. If it doesn't already exist, it will be created.
 #'
-#' @return The function
 #' @export
 #'
 #' @examples
