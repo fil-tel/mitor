@@ -68,6 +68,10 @@ download_zip <- function(dir, name, download_code, list){
 #' @return The function
 #' @export
 #'
+#' @examples
+#' sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
+#' predict_af3(seq = sequence, name = "example", dir = "dir1/dir2")
+#'
 predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 
   seq <- as.character(seq)
@@ -98,14 +102,13 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
   else stop(paste0("OPS! Something went wrong!", "Error:", status_code(response), "\n"))
 
   download_code <- unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
+  if(is.na(download_code)) stop("Oops! Looks like you've hit your daily quota. Please submit after your quota refreshes around midnight UTC.")
   cat(download_code)
   dir.create(dir, recursive = TRUE)
   future::plan(future::multisession)
   future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers), packages = "httr")
 }
 
-sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
-# predict_af3(seq = sequence, name = "bobob", dir = "boia/cazz")
 
 
 
