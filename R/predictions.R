@@ -58,7 +58,7 @@ download_zip <- function(dir, name, download_code, list){
   }
 }
 
-#' Predeicting Protein Structure With AlphaFold3 Server
+#' Predicting Protein Structure With AlphaFold3 Server
 #'
 #' @param seq String. Amino acids sequence of the protein, only canonical AAs are accepted. AAString object are accepted.
 #' @param name String. Name of the zip file containing the prediction to be created.
