@@ -105,7 +105,7 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 }
 
 sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
-predict_af3(seq = sequence, name = "bobob", dir = "boia/cazz")
+# predict_af3(seq = sequence, name = "bobob", dir = "boia/cazz")
 
 
 
