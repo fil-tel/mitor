@@ -50,6 +50,7 @@ download_zip <- function(dir, name, download_code, list){
   Sys.sleep(40)
   response <- httr::GET(url, headers)
   status=httr::status_code(response)
+  # print(status)
   if (status == 200) {
     file_path <- paste0(dir, "/" , name, ".zip")
     writeBin(content(response, "raw"), file_path)
@@ -97,13 +98,14 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
   else stop(paste0("OPS! Something went wrong!", "Error:", status_code(response), "\n"))
 
   download_code <- unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
-
+  cat(download_code)
   dir.create(dir, recursive = TRUE)
   future::plan(future::multisession)
-  future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers))
+  future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers), packages = "httr")
 }
 
-
+sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
+predict_af3(seq = sequence, name = "bobob", dir = "boia/cazz")
 
 
 
