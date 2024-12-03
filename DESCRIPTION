@@ -23,6 +23,8 @@ Imports:
     msa,
     phangorn,
     rentrez,
-    seqinr
+    seqinr,
+    stringr,
+    future
 Remotes:
     gmbecker/genbankr

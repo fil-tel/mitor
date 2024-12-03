@@ -40,7 +40,7 @@ fetch_seq <- function(query, dir_path, filename, create=TRUE, n=NULL, db = "nucc
     if(cont != 'y') stop('Aborted by user')
   }
 
-  search <- entrez_search(db = db,term = query, use_history = TRUE)
+  search <- rentrez::entrez_search(db = db,term = query, use_history = TRUE)
 
   if (create) {
     unlink(dir_path, recursive = TRUE, force = TRUE)
@@ -62,7 +62,7 @@ fetch_seq <- function(query, dir_path, filename, create=TRUE, n=NULL, db = "nucc
       max = n - (seq_start - 1)
     }
     recs_fa <-
-      entrez_fetch(
+      rentrez::entrez_fetch(
         db = db,
         web_history = search$web_history,
         rettype = "fasta",
@@ -72,7 +72,7 @@ fetch_seq <- function(query, dir_path, filename, create=TRUE, n=NULL, db = "nucc
     write(recs_fa, file = paste0(dir_path,  "/", filename, ".fa"), append = TRUE)
     if(gb){
       recs_gb <-
-        entrez_fetch(
+        rentrez::entrez_fetch(
           db = db,
           web_history = search$web_history,
           rettype = "gb",
