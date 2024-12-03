@@ -58,13 +58,31 @@ download_zip <- function(dir, name, download_code, list){
   }
 }
 
+#' Predeicting Protein Structure With AlphaFold3 Server
+#'
+#' @param seq String. Amino acids sequence of the protein, only canonical AAs are accepted. AAString object are accepted.
+#' @param name String. Name of the zip file containing the prediction to be created.
+#' @param dir String. Path of the directory where to save the zip file with the prediction. If it doesn't already exist, it will be created.
+#'
+#' @return The function
+#' @export
+#'
 predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 
+  seq <- as.character(seq)
+  if(!grepl(paste0("^[", paste0(Biostrings::AA_ALPHABET[1:20], collapse = ""), "]+$"), seq, ignore.case = TRUE)) stop("The AA sequence contains character that are not accepted.")
   if(is.null(seq)) stop("You need to pass a protein sequence!")
   if(is.null(name)) stop("You need to pass a name for yout job!")
   if(is.null(dir)) dir = getwd()
 
-  list_post <- process_curl("inst/curl.txt")
+  path <- system.file("extdata", "curl.txt", package = "mitor")
+  if(identical(readLines(path), character(0))){
+    stop("You didn't provide the your cookies to access the AlphaFold3 server. Follow the instructions here:
+         linktogthub")
+  }
+  else{
+    list_post <- process_curl(path)
+  }
 
   post_data <- paste0("f.req=%5B%5B%5B%22kMnDgb%22%2C%22%5B%5B%5C%22", name, "%5C%22%2C%5B%5B%5Bnull%2C%5C%22", toupper(seq), "%5C%22%2Cnull%2Cnull%2Cnull%2Cnull%2C1%5D%5D%5D%5D%2C1%2C%5B2093574080%5D%5D%22%2Cnull%2C%22generic ",list_post$generic)
 
