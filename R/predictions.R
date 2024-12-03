@@ -93,13 +93,13 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
     encode = "raw"
   )
 
-  if(response$status_code==200) cat("The call to the server went well! Wait sometime for the download!")
-  else stop(paste0("OPS! Something went wrong!", "Error:", status_code(response)))
+  if(response$status_code==200) cat("The call to the server went well! Wait sometime for the download!\n")
+  else stop(paste0("OPS! Something went wrong!", "Error:", status_code(response), "\n"))
 
   download_code <- unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
 
   dir.create(dir, recursive = TRUE)
-  future::plan(multisession)
+  future::plan(future::multisession)
   future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers))
 }
 
