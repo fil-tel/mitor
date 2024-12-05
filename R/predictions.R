@@ -81,7 +81,7 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 
   path <- system.file("extdata", "curl.txt", package = "mitor")
   if(identical(readLines(path), character(0))){
-    stop("You didn't provide the your cookies to access the AlphaFold3 server. Follow the instructions here:
+    stop("You didn't provide your cookies to access the AlphaFold3 server. Follow the instructions here:
          linktogthub")
   }
   else{

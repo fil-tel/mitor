@@ -13,9 +13,11 @@ predict_af3(seq = NULL, name = NULL, dir = NULL)
 
 \item{dir}{String. Path of the directory where to save the zip file with the prediction. If it doesn't already exist, it will be created.}
 }
-\value{
-The function
-}
 \description{
 Predicting Protein Structure With AlphaFold3 Server
+}
+\examples{
+sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
+predict_af3(seq = sequence, name = "example", dir = "dir1/dir2")
+
 }
