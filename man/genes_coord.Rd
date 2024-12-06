@@ -7,7 +7,7 @@
 genes_coord(msa)
 }
 \arguments{
-\item{msa}{A multiple sequence alignment object, typically a \code{DNAStringSet}
+\item{msa}{A multiple sequence alignment object, a \code{DNAStringSet}
 from the \code{Biostrings} package. The reference sequence in the MSA should be identified
 as \code{NC_012920}.}
 }

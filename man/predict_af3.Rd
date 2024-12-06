@@ -16,8 +16,3 @@ predict_af3(seq = NULL, name = NULL, dir = NULL)
 \description{
 Predicting Protein Structure With AlphaFold3 Server
 }
-\examples{
-sequence <- paste0(sample(Biostrings::AA_ALPHABET[1:20], size = 120, replace = TRUE), collapse = "")
-predict_af3(seq = sequence, name = "example", dir = "dir1/dir2")
-
-}
