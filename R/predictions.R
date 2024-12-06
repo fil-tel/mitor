@@ -47,11 +47,12 @@ download_zip <- function(dir, name, download_code, list){
 
   status=500
   while(status!=200){
-  Sys.sleep(40)
+  Sys.sleep(45)
   response <- httr::GET(url, headers)
   status=httr::status_code(response)
   # print(status)
   if (status == 200) {
+    Sys.sleep(5)
     file_path <- paste0(dir, "/" , name, ".zip")
     writeBin(content(response, "raw"), file_path)
     cat(paste0("The file ", name, ".zip has bin downloaded in ", file_path))
@@ -70,7 +71,9 @@ download_zip <- function(dir, name, download_code, list){
 #'
 predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 
+  # make sure is a String
   seq <- as.character(seq)
+  # check that all the arguments are respected
   if(!grepl(paste0("^[", paste0(Biostrings::AA_ALPHABET[1:20], collapse = ""), "]+$"), seq, ignore.case = TRUE)) stop("The AA sequence contains character that are not accepted.")
   if(is.null(seq)) stop("You need to pass a protein sequence!")
   if(is.null(name)) stop("You need to pass a name for yout job!")
@@ -99,7 +102,7 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
 
   download_code <- unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
   if(is.na(download_code)) stop("Oops! Looks like you've hit your daily quota. Please submit after your quota refreshes around midnight UTC.")
-  cat(download_code)
+  cat(download_code, "\n")
   dir.create(dir, recursive = TRUE)
   future::plan(future::multisession)
   future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers), packages = "httr")
