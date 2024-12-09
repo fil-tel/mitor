@@ -212,7 +212,7 @@ translation <- function(msa){
   # extract cds without stop codon
   prot2trans <- Biostrings::subseq(ungapped, start = 1, end = n_codons*3)
   # translate
-  Biostrings::translate(prot2trans, genetic.code = getGeneticCode("2"), if.fuzzy.codon = "X")
+  Biostrings::translate(prot2trans, genetic.code = Biostrings::getGeneticCode("2"), if.fuzzy.codon = "X")
 }
 
 
