@@ -198,7 +198,7 @@ extract_cds <- function(msa, coord_df){
 translation <- function(msa){
   # ungapped msa, the presence of gaps messes up the translation
   ungapped <- Biostrings::DNAStringSet(gsub("-", "", msa))
-  widhts <- Biostrings::width(ungapped)
+  widths <- Biostrings::width(ungapped)
   n_codons <- numeric(length(widhts))
   # number of codons excluding stop codon, check if integer because of polyA stop codon
   for (i in seq(length(n_codons))) {
