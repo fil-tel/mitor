@@ -271,12 +271,122 @@ find_variants <- function(msa, target, ref="NC_012920"){
   seqs <- as.matrix(msa[c(ref,target)])
   variants_list <- apply(seqs, 2, unique)
   gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
+  if(gaps==-1) gaps <- NULL
   mutations <- c()
   i <- 1
   # variants_list
   while (i<=length(variants_list)) {
     # if in the position there is only 1 character (no difference) skip the iteration
     if(length(variants_list[[i]])==1 |  "N" %in% variants_list[[i]]){
+      i <- i+1
+      next
+    }
+    # Insertion case: if there is a gap in the reference
+    else if(variants_list[[i]][1]=="-"){
+      # position after the beginning of the gap
+      if(i+1<=length(variants_list)){
+        c <- i+1
+      }
+      # if the insertion is longer than one base we need to check how long it is
+      while (variants_list[[c]][1]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
+        c <- c+1
+      }
+      # adjust the insertion indices according to the position in the ref seq not in the msa, as always
+      ins_start <- i-sum(gaps<i)-1
+      ins_end <- ins_start+1
+      # extract the bases inserted in the target seq
+      ins_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[2]), collapse = "")
+      mutations <- c(mutations, paste0(ins_start, "_", ins_end, "ins", ins_bases))
+      # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
+      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
+        i <- c+1
+      }
+      else{
+        i <- c
+      }
+    }
+    # Deletion case: if there is a gap in the target
+    else if(variants_list[[i]][2]=="-"){
+      # position after the beginning of the gap
+      if(i+1<=length(variants_list)){
+        c <- i+1
+      }
+      # if the deletion is longer than one base we need to check how long it is
+      # the other conditions are to avoid to go out of bound when if at the end of the alignment
+      while (!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
+        c <- c+1
+      }
+      # adjust the insertion indices according to the position in the ref seq not in the msa, as always
+      del_start <- i-sum(gaps<i)
+      del_end <- del_start+(c-i)-1
+      # one base del
+      if(del_start==del_end){
+        del_bases <- variants_list[[i]][1]
+        mutations <- c(mutations, paste0(del_start, "del", del_bases))
+      }
+      # more than one base deletion
+      else{
+        # extract the bases inserted in the target seq
+        del_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[1]), collapse = "")
+        mutations <- c(mutations, paste0(del_start, "_", del_end, "del", del_bases))
+      }
+      # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
+      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
+        i <- c+1
+      }
+      else{
+        i <- c
+      }
+    }
+    # subsituition case
+    else{
+      # adjust index according to the msa
+      sub_i <- i-sum(gaps<i)
+      mutations <- c(mutations, paste0(sub_i, variants_list[[i]][1], ">", variants_list[[i]][2]))
+      i <- i+1
+    }
+  }
+  mutations
+}
+
+#' Identify Sequence Variations in Multiple Sequence Alignment (MSA)
+#'
+#' This function detects and returns variations between a target sequence and a reference sequence (typically rCRS)
+#' within a given multiple sequence alignment (MSA). Variations are annotated following the
+#' nomenclature described at <https://www.hgmd.cf.ac.uk/docs/mut_nom.html>. Note that different
+#' nomenclature systems may appear in other studies.
+#'
+#' @param msa A multiple sequence alignment object, a `DNAStringSet`
+#'            from the `Biostrings` package. Containing the target and the reference.
+#' @param target String. Name of the target sequence in contained in the MSA.
+#' @param ref String. Name of the reference sequence in the MSA.
+#'            Defaults to `"NC_012920"`.
+#'
+#' @return A character vector containing the identified variations between the target and reference
+#'         sequences. Variations are described using the following formats:
+#'         - Substitutions: `<position><reference_base>><target_base>` (e.g., "123A>G").
+#'         - Insertions: `<start_position>_<end_position>ins<bases>` (e.g., "123_124insAT").
+#'         - Deletions: `<start_position>_<end_position>del<bases>` (e.g., "123_125delGTC").
+#'
+#' @details
+#' Positions are adjusted to match the reference sequence, accounting for gaps introduced
+#'          during the alignment process. Ambiguous bases (e.g., "N") are ignored.
+#'
+#' @export
+find_variants_AA <- function(msa, target, ref="NC_012920"){
+  # ref seq goes in front
+  if(!target %in% names(msa)) stop("The target sequence is not present in the MSA. Check the argument you passed.")
+  if(!ref %in% names(msa)) stop("The reference sequence is not present in the MSA. Check the argument you passed.")
+  seqs <- as.matrix(msa[c(ref,target)])
+  variants_list <- apply(seqs, 2, unique)
+  gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
+  if(gaps==-1) gaps <- NULL
+  mutations <- c()
+  i <- 1
+  # variants_list
+  while (i<=length(variants_list)) {
+    # if in the position there is only 1 character (no difference) skip the iteration
+    if(length(variants_list[[i]])==1 |  "X" %in% variants_list[[i]]){
       i <- i+1
       next
     }
