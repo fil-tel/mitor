@@ -4,12 +4,14 @@
 \alias{genes_coord}
 \title{Adjust Gene Coordinates Based on Gaps in a Multiple Sequence Alignment}
 \usage{
-genes_coord(msa)
+genes_coord(msa, ref = "NC_012920")
 }
 \arguments{
 \item{msa}{A multiple sequence alignment object, a \code{DNAStringSet}
 from the \code{Biostrings} package. The reference sequence in the MSA should be identified
 as \code{NC_012920}.}
+
+\item{ref}{Name of the reference sequence in the MSA. Default: NC_012920}
 }
 \value{
 A data frame containing the adjusted gene coordinates:

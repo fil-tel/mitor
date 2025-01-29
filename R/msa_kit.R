@@ -6,6 +6,7 @@
 #' @param msa A multiple sequence alignment object, a `DNAStringSet`
 #'            from the `Biostrings` package. The reference sequence in the MSA should be identified
 #'            as `NC_012920`.
+#' @param ref Name of the reference sequence in the MSA. Default: NC_012920
 #'
 #' @return A data frame containing the adjusted gene coordinates:
 #' \describe{
@@ -36,10 +37,10 @@
 #'
 #'
 #' @export
-genes_coord <- function(msa){
+genes_coord <- function(msa, ref="NC_012920"){
   genes <- rCRS_genes_df
   # identify locations of the gaps in the reference to adjust the indices of the genes
-  gaps <- unlist(gregexpr("-",as.character(msa$`NC_012920`)))
+  gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
   # adjust the indices according to the position of the gaps in the reference
   for (i in gaps) {
     genes$start <- genes$start+as.integer(genes$start>=i)

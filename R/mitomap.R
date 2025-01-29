@@ -1,5 +1,6 @@
 
-
+# Function to split the tables returned by
+# the search allele in mitomap into different dataframe
 split_df <- function(df){
   rows2split <- which(df[,1]=="")-1
   rows2split <- c(rows2split, length(df[,1]))
@@ -16,9 +17,25 @@ split_df <- function(df){
     colnames(df_list[[j]]) <- tmp[2,]
     df_list[[j]] <- df_list[[j]][, !is.na(colnames(df_list[[j]]))]
   }
+  # I will discard the Somatic Variants dataframe
   df_list[names(df_list)!="MITOMAP: mtDNA Somatic Variants"]
 }
 
+
+#' Title
+#'
+#' @param pos
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   pos <- 13800:13900
+#'  pos <- 5
+#'  test <- search_allele(pos)
+#'  test
+#'   }
 search_allele <- function(pos=NULL){
 
   if(is.null(pos)) stop("Error! Provide at least 1 position!")
@@ -56,25 +73,26 @@ search_allele <- function(pos=NULL){
     pstns = pstn
   )
   # classic POST request
-  response <- POST(
+  response <- httr::POST(
     url,
-    add_headers(.headers = headers),
+    httr::add_headers(.headers = headers),
     body = form_data,
     encode = "form"
   )
 
-  content <- content(response, as = "text", encoding = "UTF-8")
+  content <- httr::content(response, as = "text", encoding = "UTF-8")
 
-  tab <- html_table(read_html(content))
+  tab <- rvest::html_table(rvest::read_html(content))
   if(length(tab)==0 | any(unique(colnames(tab[[1]]))=="MITOMAP: mtDNA Somatic Variants")) stop("No reported variants are reported in the MITOMAP databse
                                                                     for the given positions.")
 
-  tmp <- as.data.frame(html_table(read_html(content))[[1]])
-
+  # modifying the html because scraping the table from it
+  # it is a bit problematic
+  tmp <- as.data.frame(rvest::html_table(rvest::read_html(content))[[1]])
   tmp2 <- gsub(">\\d+\\.\\d+%", "", content)
   tmp3 <- gsub("\\(count", "[count", tmp2)
   tmp4 <- gsub("<br>\\(", "</td><td>", tmp3)
-  def <- as.data.frame(html_table(read_html(tmp4))[[1]])
+  def <- as.data.frame(rvest::html_table(rvest::read_html(tmp4))[[1]])
 
   if("Conservation" %in% tmp[2,]){
     cons_col <- tmp[ ,which(tmp[2,]=="Conservation")]
@@ -110,34 +128,19 @@ search_allele <- function(pos=NULL){
 
 }
 
-pos <- 13800:13900
-pos <- 5
-test <- search_allele(pos)
-test
+
 
 # list <- split_df(test)
 
-strsplit(list$`MITOMAP: mtDNA Coding Region Sequence Variants`$`Nucleotide†(AA Change♦)`, split = "\\(tRNA\\)")
+# strsplit(list$`MITOMAP: mtDNA Coding Region Sequence Variants`$`Nucleotide†(AA Change♦)`, split = "\\(tRNA\\)")
+#
+# list$`MITOMAP: mtDNA Coding Region Sequence Variants` %>%
+#   separate(`Nucleotide†(AA Change♦)`, into = c("Nucleotide", "type"), sep = "\\(", extra = "merge", fill = "right")
+#
+#
+# ca <- httr::GET(url = "https://www.mitomap.org/mitomaster/conservation.cgi?loc=1390&locus=33&pos=1&res=S&all=0&frameshift=0&_=1738069039120")
+# s <- content(ca, as = "text")
+#
+# ex <- fromJSON(s)
+# ex
 
-list$`MITOMAP: mtDNA Coding Region Sequence Variants` %>%
-  separate(`Nucleotide†(AA Change♦)`, into = c("Nucleotide", "type"), sep = "\\(", extra = "merge", fill = "right")
-
-
-ca <- GET(url = "https://www.mitomap.org/mitomaster/conservation.cgi?loc=1390&locus=33&pos=1&res=S&all=0&frameshift=0&_=1738069039120")
-s <- content(ca, as = "text")
-
-ex <- fromJSON(s)
-ex
-
-t <- gsub(">0</td>", ">0<br></td>", content)
-t <- gsub("<br><span", "</td><td><span", t)
-tt <- gsub("<br>\\([^count]|<br>[0-9]", "</td><td>", t)
-# ttt <- gsub("<br>", "</td><td>", tt)
-z <- as.data.frame(html_table(read_html(content), convert = TRUE)[[1]])
-b <- split_df(z)
-
-c <- gsub("<br>\\d+\\.\\d+%", "", content)
-cc <- gsub("\\(count", "[count", c)
-ccc <- gsub("<br>\\(|<br>[0-9]", "</td><td>", cc)
-z <- as.data.frame(html_table(read_html(ccc), convert = TRUE)[[1]])
-z
