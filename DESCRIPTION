@@ -24,7 +24,9 @@ Imports:
     rentrez,
     seqinr,
     stringr,
-    future
+    future,
+    rvest,
+    httr
 Remotes:
     gmbecker/genbankr
 Depends: 
