@@ -22,18 +22,22 @@ split_df <- function(df){
 }
 
 
-#' Title
+#' Search Positions Information in the Mitomap Database
 #'
-#' @param pos
+#' search_allele allows the user to programmatically retrieve information regarding human mitochondrial varaints at a given position as shown in the
+#' MITOMAP database. It is equivalent to manually searching it in [webserver](https://www.mitomap.org/allelesearch.html),
+#' but with the advantage of returning results in a structured data frame format, making it easier to analyze.
 #'
-#' @return
+#' @param pos Vector. Numeric vector of mitochondrial positions (max. 100).
+#'
+#' @return A list of data frames. Each data frame corresponds to the variants in Coding Region Sequence Variants,
+#' Control Region Sequence Variants, Reported Mitochondrial DNA Base Substitution Diseases.
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #'   pos <- 13800:13900
-#'  pos <- 5
-#'  test <- search_allele(pos)
+#'  example <- search_allele(pos)
 #'  test
 #'   }
 search_allele <- function(pos=NULL){
