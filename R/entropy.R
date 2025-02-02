@@ -47,10 +47,10 @@ position_entropy_dna <- function(msa){
 #' @export
 #'
 #'
-position_entropy_prot <- function(msa){
+position_entropy_AA <- function(msa){
   # find consensus matrix as counts and calc the entropy for proteins seq
-  cons_matrix <- consensusMatrix(msa)
-  # consider only the 20 aminoacid, no ambiguities
+  cons_matrix <- Biostrings::consensusMatrix(msa)
+  # consider only the 20 amino acid, no ambiguities
   freq <- cons_matrix[1:20,]
   freq <- sweep(freq, 2, colSums(freq), "/")
   entropy <- apply(freq, 2, calc_entropy)
