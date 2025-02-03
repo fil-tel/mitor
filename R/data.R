@@ -84,3 +84,41 @@
 #'
 #'
 "gnomAD_df"
+
+
+#' gnomAD v3.1 Mitochondrial DNA Variants
+#'
+#' This dataframe contains the Mitochondrial DNA (mtDNA) variants for [gnomaAD](https://gnomad.broadinstitute.org/news/2020-11-gnomad-v3-1-mitochondrial-dna-variants/).
+#'
+#' @format A \code{data frame} of dimenison 10850X99:
+#' \describe{
+#'   \item{\code{CHROM}}{Character. The chromsome, "chrM" for all the entries.}
+#'   \item{\code{POS}}{Integer. The position of the variant in the rCRS.}
+#'   \item{\code{ID}}{Character. refSNP id for the variant. Not always available.}
+#'    \item{\code{AF_hom}}{Double. Frequency of the variant in homoplasmic state in the database. }
+#'    \item{\code{Allele}}{Character. Allele state of the alternative variant. }
+#'        \item{\code{Consequence}}{Character. Type of variant: "intergenic_variant", "non_coding_transcript_exon_variant", "start_lost",
+#'     "stop_gained&start_lost",     "synonymous_variant" ,
+#'     "missense_variant",
+#'     "frameshift_variant",
+#'     "stop_gained",
+#'     "frameshift_variant&stop_lost" ,
+#'      "stop_lost",
+#'      "stop_retained_variant",
+#'      "coding_sequence_variant&3_prime_UTR_variant",
+#'     "inframe_deletion",
+#'      "incomplete_terminal_codon_variant&coding_sequence_variant". }
+#'    \item{\code{Protein_position}}{Numeric. Position of the amino acid in the protein.}
+#'    \item{\code{AA_ref}}{Character. Amino acid (one letter code) in the rCRS.}
+#'    \item{\code{AA_alt}}{Character. Amino acid (one letter code) in the variant.}
+#' }
+#'
+#' @details
+#' This data frame contains information of the human mitochondrial variants as stored in the [gnomaAD](https://gnomad.broadinstitute.org/news/2020-11-gnomad-v3-1-mitochondrial-dna-variants/).
+#' Since the file on the database is a vcf file, this data frame allows the user to navigate through them in a more
+#' user friendly way. Moreover, the data frame presents only the variants that passed the quality filter pipeline, as described in their [website](https://gnomad.broadinstitute.org/news/2020-11-gnomad-v3-1-mitochondrial-dna-variants/).
+#'
+#' @source [gnomAD v3.1 Mitochondrial DNA Variants](https://gnomad.broadinstitute.org/news/2020-11-gnomad-v3-1-mitochondrial-dna-variants/)
+#'
+#'
+"complexI_coord"

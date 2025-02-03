@@ -1,3 +1,5 @@
+
+
 #' Assign the Haplogroups of a set of human mtDNA Sequences
 #'
 #' `classify_haplogroup` classify mitochondrial DNA haplogroups using [Haplogrep 3](https://haplogrep.readthedocs.io/en/latest/installation/)
@@ -35,6 +37,14 @@ classify_haplogroup <- function(sequences) {
 
   if(!grep("haplogrep" , system("echo $PATH", intern = TRUE))) stop("The haplogrep directory hasn't been set up in the PATH variable.
                                                                     Visit githublink for a step-by-step guide.")
+
+  # if sequences have IUPAC ambiguities not accepted by haplogrep they will be removed
+  if(any(grepl("[URYSWKMBDHV]", sequences))){
+    cat("Warning! Some of the sequences contain IUPAC ambiguities not accepted by haplogrep3.\n")
+    cont <- readline('Do you wish to continue? [Y/N] \n If yes these sequences will be removed.')
+    if(cont != 'Y') stop('Aborted by user')
+    sequences <- sequences[!grepl("[URYSWKMBDHV]", sequences)]
+  }
   # temporary files for input and output
   input_file <- tempfile(fileext = ".fasta")
   output_file <- tempfile(fileext = ".tsv")

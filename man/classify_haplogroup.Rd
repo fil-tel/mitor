@@ -33,4 +33,8 @@ Output example:
 \details{
 \code{classify_haplogroup} invokes \emph{haplogrep3}, which has to be previously installed on the user's machine.
 For a step-by-step guide on installing and setting up haplogrep3, visit \url{github}.
+
+The function might take 30-40 min for large datasets (~60000 sequences) and it runs in background.
+
+For more information regarding the software and the results visit \url{https://haplogrep.readthedocs.io/en/latest/installation/}
 }
