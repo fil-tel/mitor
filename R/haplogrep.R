@@ -51,7 +51,7 @@ classify_haplogroup <- function(sequences) {
   Biostrings::writeXStringSet(sequences, filepath = input_file)
 
   # run haplogrep
-  system(paste("haplogrep3 classify --in", input_file, "--tree phylotree-rcrs@17.2" , "--out", output_file), wait = FALSE)
+  system(paste("haplogrep3 classify --in", input_file, "--tree phylotree-rcrs@17.2" , "--out", output_file), wait = TRUE)
 
   result <- read.table(output_file, header = TRUE)
 
