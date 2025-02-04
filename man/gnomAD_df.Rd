@@ -5,7 +5,7 @@
 \alias{gnomAD_df}
 \title{gnomAD v3.1 Mitochondrial DNA Variants}
 \format{
-A \code{data frame} of dimenison 10850X99:
+A \code{data frame} of dimension 10850X99:
 \describe{
 \item{\code{CHROM}}{Character. The chromsome, "chrM" for all the entries.}
 \item{\code{POS}}{Integer. The position of the variant in the rCRS.}
