@@ -1,5 +1,3 @@
-
-
 #' Assign the Haplogroups of a set of human mtDNA Sequences
 #'
 #' `classify_haplogroup` classify mitochondrial DNA haplogroups using [Haplogrep 3](https://haplogrep.readthedocs.io/en/latest/installation/)
@@ -28,21 +26,27 @@
 #' `classify_haplogroup` invokes \emph{haplogrep3}, which has to be previously installed on the user's machine.
 #' For a step-by-step guide on installing and setting up haplogrep3, visit [github]().
 #'
-#' The function might take 30-40 min for large datasets (~60000 sequences) and it runs in background.
+#' The function might take 30-40 min for large datasets (~60000 sequences).
 #'
 #' For more information regarding the software and the results visit \url{https://haplogrep.readthedocs.io/en/latest/installation/}
 #'
 #'
 classify_haplogroup <- function(sequences) {
-
-  if(!grep("haplogrep" , system("echo $PATH", intern = TRUE))) stop("The haplogrep directory hasn't been set up in the PATH variable.
-                                                                    Visit githublink for a step-by-step guide.")
+  if (Sys.which("haplogrep3") == "")
+    stop(
+      "The haplogrep binary couldn't be found. \n Did you add it to your PATH variable? \n
+  Visit GITHUBLINK for a step-by-step guide.                                                                   Visit githublink for a step-by-step guide."
+    )
 
   # if sequences have IUPAC ambiguities not accepted by haplogrep they will be removed
-  if(any(grepl("[URYSWKMBDHV]", sequences))){
-    cat("Warning! Some of the sequences contain IUPAC ambiguities not accepted by haplogrep3.\n")
-    cont <- readline('Do you wish to continue? [Y/N] \n If yes these sequences will be removed.')
-    if(cont != 'Y') stop('Aborted by user')
+  if (any(grepl("[URYSWKMBDHV]", sequences))) {
+    cat(
+      "Warning! Some of the sequences contain IUPAC ambiguities not accepted by haplogrep3.\n"
+    )
+    cont <-
+      readline('Do you wish to continue? [Y/N] \n If yes these sequences will be removed.')
+    if (cont != 'Y')
+      stop('Aborted by user')
     sequences <- sequences[!grepl("[URYSWKMBDHV]", sequences)]
   }
   # temporary files for input and output
@@ -51,7 +55,16 @@ classify_haplogroup <- function(sequences) {
   Biostrings::writeXStringSet(sequences, filepath = input_file)
 
   # run haplogrep
-  system(paste("haplogrep3 classify --in", input_file, "--tree phylotree-rcrs@17.2" , "--out", output_file), wait = TRUE)
+  system(
+    paste(
+      "haplogrep3 classify --in",
+      input_file,
+      "--tree phylotree-rcrs@17.2" ,
+      "--out",
+      output_file
+    ),
+    wait = TRUE
+  )
 
   result <- read.table(output_file, header = TRUE)
 
