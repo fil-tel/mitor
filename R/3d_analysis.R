@@ -13,4 +13,6 @@ k_t <- function(variants, complex=NULL){
 
   coords <- merge(variants, df, by=c("Protein", "Pos"))
 
+
+
 }
