@@ -37,14 +37,14 @@
 #'
 #'
 #' @export
-genes_coord <- function(msa, ref="NC_012920"){
+genes_coord <- function(msa, ref = "NC_012920") {
   genes <- rCRS_genes_df
   # identify locations of the gaps in the reference to adjust the indices of the genes
-  gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
+  gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
   # adjust the indices according to the position of the gaps in the reference
   for (i in gaps) {
-    genes$start <- genes$start+as.integer(genes$start>=i)
-    genes$end <- genes$end+as.integer(genes$end>=i)
+    genes$start <- genes$start + as.integer(genes$start >= i)
+    genes$end <- genes$end + as.integer(genes$end >= i)
   }
   genes
 }
@@ -63,11 +63,10 @@ genes_coord <- function(msa, ref="NC_012920"){
 #'
 #' @export
 #'
-save_genes <- function(msa, coord_df, dir="data"){
-
+save_genes <- function(msa, coord_df, dir = "data") {
   cds_path <- paste0(dir, "/genes/cds")
-  trna_path <- paste0(dir,"/genes/trna")
-  rrna_path <- paste0(dir,"/genes/rrna")
+  trna_path <- paste0(dir, "/genes/trna")
+  rrna_path <- paste0(dir, "/genes/rrna")
 
   unlink(cds_path, recursive = TRUE, force = TRUE)
   dir.create(cds_path, recursive = TRUE)
@@ -78,17 +77,29 @@ save_genes <- function(msa, coord_df, dir="data"){
 
   for (i in rownames(coord_df)) {
     # save in fasta the subsets of the alignment containing only the genes
-    if (startsWith(coord_df[i,]$gene_id, "R")) {
-      Biostrings::writeXStringSet(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end), paste0(rrna_path, "/", coord_df[i,]$gene_id ,'.fa'))
-    }else if (startsWith(coord_df[i,]$gene_id, "T")) {
-      Biostrings::writeXStringSet(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end), paste0(trna_path, "/", coord_df[i,]$gene_id ,'.fa'))
-    }else{
+    if (startsWith(coord_df[i, ]$gene_id, "R")) {
+      Biostrings::writeXStringSet(
+        Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end),
+        paste0(rrna_path, "/", coord_df[i, ]$gene_id , '.fa')
+      )
+    } else if (startsWith(coord_df[i, ]$gene_id, "T")) {
+      Biostrings::writeXStringSet(
+        Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end),
+        paste0(trna_path, "/", coord_df[i, ]$gene_id , '.fa')
+      )
+    } else{
       # ND6 is the only gene on the - strand, since later I will translate them I reversed it now
-      if(coord_df[i,]$strand == "+"){
-        Biostrings::writeXStringSet(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end), paste0(cds_path, "/", coord_df[i,]$gene_id ,'.fa'))
+      if (coord_df[i, ]$strand == "+") {
+        Biostrings::writeXStringSet(
+          Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end),
+          paste0(cds_path, "/", coord_df[i, ]$gene_id , '.fa')
+        )
       }
       else{
-        Biostrings::writeXStringSet(Biostrings::reverseComplement(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end), paste0(cds_path, "/", coord_df[i,]$gene_id ,'.fa')))
+        Biostrings::writeXStringSet(Biostrings::reverseComplement(
+          Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end),
+          paste0(cds_path, "/", coord_df[i, ]$gene_id , '.fa')
+        ))
       }
     }
   }
@@ -108,13 +119,17 @@ save_genes <- function(msa, coord_df, dir="data"){
 #'         with gene identifiers as names.
 #' @export
 #'
-extract_rrna <- function(msa, coord_df){
+extract_rrna <- function(msa, coord_df) {
   rrna_list <- Biostrings::DNAStringSetList()
   rrna_names <- c()
   for (i in rownames(coord_df)) {
-    if (startsWith(coord_df[i,]$gene_id, "R")) {
-      rrna_list <- append(rrna_list, Biostrings::DNAStringSetList(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end)))
-      rrna_names <- c(rrna_names, coord_df[i,]$gene_id)
+    if (startsWith(coord_df[i, ]$gene_id, "R")) {
+      rrna_list <-
+        append(rrna_list,
+               Biostrings::DNAStringSetList(
+                 Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end)
+               ))
+      rrna_names <- c(rrna_names, coord_df[i, ]$gene_id)
     }
   }
   names(rrna_list) <- rrna_names
@@ -135,13 +150,17 @@ extract_rrna <- function(msa, coord_df){
 #'         with gene identifiers as names.
 #' @export
 #'
-extract_trna <- function(msa, coord_df){
+extract_trna <- function(msa, coord_df) {
   trna_list <- Biostrings::DNAStringSetList()
   trna_names <- c()
   for (i in rownames(coord_df)) {
-    if (startsWith(coord_df[i,]$gene_id, "T")) {
-      trna_list <- append(trna_list, Biostrings::DNAStringSetList(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end)))
-      trna_names <- c(trna_names, coord_df[i,]$gene_id)
+    if (startsWith(coord_df[i, ]$gene_id, "T")) {
+      trna_list <-
+        append(trna_list,
+               Biostrings::DNAStringSetList(
+                 Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end)
+               ))
+      trna_names <- c(trna_names, coord_df[i, ]$gene_id)
     }
   }
   names(trna_list) <- trna_names
@@ -162,20 +181,29 @@ extract_trna <- function(msa, coord_df){
 #'         with gene identifiers as names.
 #' @export
 #'
-extract_cds <- function(msa, coord_df){
+extract_cds <- function(msa, coord_df) {
   cds_list <- Biostrings::DNAStringSetList()
   cds_names <- c()
   for (i in rownames(coord_df)) {
-    if (!startsWith(coord_df[i,]$gene_id, "T")&!startsWith(coord_df[i,]$gene_id, "R")) {
+    if (!startsWith(coord_df[i, ]$gene_id, "T") &
+        !startsWith(coord_df[i, ]$gene_id, "R")) {
       # ND6 is the only gene on the - strand, since later I will translate them I reversed it now
-      if(coord_df[i,]$strand == "+"){
-        cds_list <- append(cds_list, Biostrings::DNAStringSetList(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end)))
+      if (coord_df[i, ]$strand == "+") {
+        cds_list <-
+          append(cds_list,
+                 Biostrings::DNAStringSetList(
+                   Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end)
+                 ))
       }
       else{
-        cds_list <- append(cds_list, Biostrings::DNAStringSetList(Biostrings::reverseComplement(Biostrings::subseq(msa, start = coord_df[i,]$start, end = coord_df[i,]$end))))
+        cds_list <-
+          append(cds_list,
+                 Biostrings::DNAStringSetList(Biostrings::reverseComplement(
+                   Biostrings::subseq(msa, start = coord_df[i, ]$start, end = coord_df[i, ]$end)
+                 )))
       }
 
-      cds_names <- c(cds_names, coord_df[i,]$gene_id)
+      cds_names <- c(cds_names, coord_df[i, ]$gene_id)
     }
   }
   names(cds_list) <- cds_names
@@ -196,24 +224,29 @@ extract_cds <- function(msa, coord_df){
 #'
 #' @note
 #' CDS MSA containing gaps are not reccomended for this function.
-translation <- function(msa){
+translation <- function(msa) {
   # ungapped msa, the presence of gaps messes up the translation
   ungapped <- Biostrings::DNAStringSet(gsub("-", "", msa))
   widths <- Biostrings::width(ungapped)
   n_codons <- numeric(length(widths))
   # number of codons excluding stop codon, check if integer because of polyA stop codon
   for (i in seq(length(n_codons))) {
-    if(widths[i]%%3==0){
-      n_codons[i] <- widths[i]/3-1
+    if (widths[i] %% 3 == 0) {
+      n_codons[i] <- widths[i] / 3 - 1
     }
     else{
-      n_codons[i] <- as.integer(widths[i]/3)
+      n_codons[i] <- as.integer(widths[i] / 3)
     }
   }
   # extract cds without stop codon
-  prot2trans <- Biostrings::subseq(ungapped, start = 1, end = n_codons*3)
+  prot2trans <-
+    Biostrings::subseq(ungapped, start = 1, end = n_codons * 3)
   # translate
-  Biostrings::translate(prot2trans, genetic.code = Biostrings::getGeneticCode("2"), if.fuzzy.codon = "X")
+  Biostrings::translate(
+    prot2trans,
+    genetic.code = Biostrings::getGeneticCode("2"),
+    if.fuzzy.codon = "X"
+  )
 }
 
 
@@ -231,8 +264,8 @@ translation <- function(msa){
 #' # Check for gaps
 #' check_gaps(aln)
 #'
-check_gaps <- function(msa){
-  !sum(nchar(gsub("-", "", msa)))==sum(nchar(msa))
+check_gaps <- function(msa) {
+  !sum(nchar(gsub("-", "", msa))) == sum(nchar(msa))
 }
 
 
@@ -265,75 +298,93 @@ check_gaps <- function(msa){
 #' aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 #' names(aln) <- paste0("seq", 1:3)
 #' find_variants(aln, target = "seq2", ref = "seq1")
-find_variants <- function(msa, target, ref="NC_012920"){
+find_variants <- function(msa, target, ref = "NC_012920") {
   # ref seq goes in front
-  if(!target %in% names(msa)) stop("The target sequence is not present in the MSA. Check the argument you passed.")
-  if(!ref %in% names(msa)) stop("The reference sequence is not present in the MSA. Check the argument you passed.")
-  seqs <- as.matrix(msa[c(ref,target)])
+  if (!target %in% names(msa))
+    stop("The target sequence is not present in the MSA. Check the argument you passed.")
+  if (!ref %in% names(msa))
+    stop("The reference sequence is not present in the MSA. Check the argument you passed.")
+  seqs <- as.matrix(msa[c(ref, target)])
   variants_list <- apply(seqs, 2, unique)
-  gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
-  if(gaps==-1) gaps <- NULL
+  gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
+  if (gaps == -1)
+    gaps <- NULL
   mutations <- c()
   i <- 1
   # variants_list
-  while (i<=length(variants_list)) {
+  while (i <= length(variants_list)) {
     # if in the position there is only 1 character (no difference) skip the iteration
-    if(length(variants_list[[i]])==1 |  "N" %in% variants_list[[i]]){
-      i <- i+1
+    if (length(variants_list[[i]]) == 1 |
+        "N" %in% variants_list[[i]]) {
+      i <- i + 1
       next
     }
     # Insertion case: if there is a gap in the reference
-    else if(variants_list[[i]][1]=="-"){
+    else if (variants_list[[i]][1] == "-") {
       # position after the beginning of the gap
-      if(i+1<=length(variants_list)){
-        c <- i+1
+      if (i + 1 <= length(variants_list)) {
+        c <- i + 1
       }
       # if the insertion is longer than one base we need to check how long it is
-      while (variants_list[[c]][1]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
-        c <- c+1
+      while (variants_list[[c]][1] == "-" &
+             c + 1 <= length(variants_list) & length(variants_list[[c]]) == 2) {
+        c <- c + 1
       }
       # adjust the insertion indices according to the position in the ref seq not in the msa, as always
-      ins_start <- i-sum(gaps<i)-1
-      ins_end <- ins_start+1
+      ins_start <- i - sum(gaps < i) - 1
+      ins_end <- ins_start + 1
       # extract the bases inserted in the target seq
-      ins_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[2]), collapse = "")
-      mutations <- c(mutations, paste0(ins_start, "_", ins_end, "ins", ins_bases))
+      ins_bases <-
+        paste0(sapply(variants_list[i:(c - 1)], function(x)
+          x[2]), collapse = "")
+      mutations <-
+        c(mutations,
+          paste0(ins_start, "_", ins_end, "ins", ins_bases))
       # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
-      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
-        i <- c+1
+      if (!is.na(variants_list[[c]][2]) &
+          variants_list[[c]][2] == "-" & c + 1 > length(variants_list)) {
+        i <- c + 1
       }
       else{
         i <- c
       }
     }
     # Deletion case: if there is a gap in the target
-    else if(variants_list[[i]][2]=="-"){
+    else if (variants_list[[i]][2] == "-") {
       # position after the beginning of the gap
-      if(i+1<=length(variants_list)){
-        c <- i+1
+      if (i + 1 <= length(variants_list)) {
+        c <- i + 1
       }
       # if the deletion is longer than one base we need to check how long it is
       # the other conditions are to avoid to go out of bound when if at the end of the alignment
-      while (!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
-        c <- c+1
+      while (!is.na(variants_list[[c]][2]) &
+             variants_list[[c]][2] == "-" &
+             c + 1 <= length(variants_list) & length(variants_list[[c]]) == 2) {
+        c <- c + 1
       }
       # adjust the insertion indices according to the position in the ref seq not in the msa, as always
-      del_start <- i-sum(gaps<i)
-      del_end <- del_start+(c-i)-1
+      del_start <- i - sum(gaps < i)
+      del_end <- del_start + (c - i) - 1
       # one base del
-      if(del_start==del_end){
+      if (del_start == del_end) {
         del_bases <- variants_list[[i]][1]
-        mutations <- c(mutations, paste0(del_start, "del", del_bases))
+        mutations <-
+          c(mutations, paste0(del_start, "del", del_bases))
       }
       # more than one base deletion
       else{
         # extract the bases inserted in the target seq
-        del_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[1]), collapse = "")
-        mutations <- c(mutations, paste0(del_start, "_", del_end, "del", del_bases))
+        del_bases <-
+          paste0(sapply(variants_list[i:(c - 1)], function(x)
+            x[1]), collapse = "")
+        mutations <-
+          c(mutations,
+            paste0(del_start, "_", del_end, "del", del_bases))
       }
       # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
-      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
-        i <- c+1
+      if (!is.na(variants_list[[c]][2]) &
+          variants_list[[c]][2] == "-" & c + 1 > length(variants_list)) {
+        i <- c + 1
       }
       else{
         i <- c
@@ -342,9 +393,11 @@ find_variants <- function(msa, target, ref="NC_012920"){
     # subsituition case
     else{
       # adjust index according to the msa
-      sub_i <- i-sum(gaps<i)
-      mutations <- c(mutations, paste0(sub_i, variants_list[[i]][1], ">", variants_list[[i]][2]))
-      i <- i+1
+      sub_i <- i - sum(gaps < i)
+      mutations <-
+        c(mutations,
+          paste0(sub_i, variants_list[[i]][1], ">", variants_list[[i]][2]))
+      i <- i + 1
     }
   }
   mutations
@@ -374,75 +427,93 @@ find_variants <- function(msa, target, ref="NC_012920"){
 #'          during the alignment process. Ambiguous bases (e.g., "N") are ignored.
 #'
 #' @export
-find_variants_AA <- function(msa, target, ref="NC_012920"){
+find_variants_AA <- function(msa, target, ref = "NC_012920") {
   # ref seq goes in front
-  if(!target %in% names(msa)) stop("The target sequence is not present in the MSA. Check the argument you passed.")
-  if(!ref %in% names(msa)) stop("The reference sequence is not present in the MSA. Check the argument you passed.")
-  seqs <- as.matrix(msa[c(ref,target)])
+  if (!target %in% names(msa))
+    stop("The target sequence is not present in the MSA. Check the argument you passed.")
+  if (!ref %in% names(msa))
+    stop("The reference sequence is not present in the MSA. Check the argument you passed.")
+  seqs <- as.matrix(msa[c(ref, target)])
   variants_list <- apply(seqs, 2, unique)
-  gaps <- unlist(gregexpr("-",as.character(msa[[ref]])))
-  if(gaps==-1) gaps <- NULL
+  gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
+  if (gaps == -1)
+    gaps <- NULL
   mutations <- c()
   i <- 1
   # variants_list
-  while (i<=length(variants_list)) {
+  while (i <= length(variants_list)) {
     # if in the position there is only 1 character (no difference) skip the iteration
-    if(length(variants_list[[i]])==1 |  "X" %in% variants_list[[i]]){
-      i <- i+1
+    if (length(variants_list[[i]]) == 1 |
+        "X" %in% variants_list[[i]]) {
+      i <- i + 1
       next
     }
     # Insertion case: if there is a gap in the reference
-    else if(variants_list[[i]][1]=="-"){
+    else if (variants_list[[i]][1] == "-") {
       # position after the beginning of the gap
-      if(i+1<=length(variants_list)){
-        c <- i+1
+      if (i + 1 <= length(variants_list)) {
+        c <- i + 1
       }
       # if the insertion is longer than one base we need to check how long it is
-      while (variants_list[[c]][1]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
-        c <- c+1
+      while (variants_list[[c]][1] == "-" &
+             c + 1 <= length(variants_list) & length(variants_list[[c]]) == 2) {
+        c <- c + 1
       }
       # adjust the insertion indices according to the position in the ref seq not in the msa, as always
-      ins_start <- i-sum(gaps<i)-1
-      ins_end <- ins_start+1
+      ins_start <- i - sum(gaps < i) - 1
+      ins_end <- ins_start + 1
       # extract the bases inserted in the target seq
-      ins_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[2]), collapse = "")
-      mutations <- c(mutations, paste0(ins_start, "_", ins_end, "ins", ins_bases))
+      ins_bases <-
+        paste0(sapply(variants_list[i:(c - 1)], function(x)
+          x[2]), collapse = "")
+      mutations <-
+        c(mutations,
+          paste0(ins_start, "_", ins_end, "ins", ins_bases))
       # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
-      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
-        i <- c+1
+      if (!is.na(variants_list[[c]][2]) &
+          variants_list[[c]][2] == "-" & c + 1 > length(variants_list)) {
+        i <- c + 1
       }
       else{
         i <- c
       }
     }
     # Deletion case: if there is a gap in the target
-    else if(variants_list[[i]][2]=="-"){
+    else if (variants_list[[i]][2] == "-") {
       # position after the beginning of the gap
-      if(i+1<=length(variants_list)){
-        c <- i+1
+      if (i + 1 <= length(variants_list)) {
+        c <- i + 1
       }
       # if the deletion is longer than one base we need to check how long it is
       # the other conditions are to avoid to go out of bound when if at the end of the alignment
-      while (!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1<=length(variants_list) & length(variants_list[[c]])==2) {
-        c <- c+1
+      while (!is.na(variants_list[[c]][2]) &
+             variants_list[[c]][2] == "-" &
+             c + 1 <= length(variants_list) & length(variants_list[[c]]) == 2) {
+        c <- c + 1
       }
       # adjust the insertion indices according to the position in the ref seq not in the msa, as always
-      del_start <- i-sum(gaps<i)
-      del_end <- del_start+(c-i)-1
+      del_start <- i - sum(gaps < i)
+      del_end <- del_start + (c - i) - 1
       # one base del
-      if(del_start==del_end){
+      if (del_start == del_end) {
         del_bases <- variants_list[[i]][1]
-        mutations <- c(mutations, paste0(del_start, "del", del_bases))
+        mutations <-
+          c(mutations, paste0(del_start, "del", del_bases))
       }
       # more than one base deletion
       else{
         # extract the bases inserted in the target seq
-        del_bases <- paste0(sapply(variants_list[i:(c-1)], function(x) x[1]), collapse = "")
-        mutations <- c(mutations, paste0(del_start, "_", del_end, "del", del_bases))
+        del_bases <-
+          paste0(sapply(variants_list[i:(c - 1)], function(x)
+            x[1]), collapse = "")
+        mutations <-
+          c(mutations,
+            paste0(del_start, "_", del_end, "del", del_bases))
       }
       # this is needed in case we have a gap in the last position, otherwise if don't do this we get stuck in the loop
-      if(!is.na(variants_list[[c]][2]) & variants_list[[c]][2]=="-" & c+1>length(variants_list)){
-        i <- c+1
+      if (!is.na(variants_list[[c]][2]) &
+          variants_list[[c]][2] == "-" & c + 1 > length(variants_list)) {
+        i <- c + 1
       }
       else{
         i <- c
@@ -451,9 +522,11 @@ find_variants_AA <- function(msa, target, ref="NC_012920"){
     # subsituition case
     else{
       # adjust index according to the msa
-      sub_i <- i-sum(gaps<i)
-      mutations <- c(mutations, paste0(sub_i, variants_list[[i]][1], ">", variants_list[[i]][2]))
-      i <- i+1
+      sub_i <- i - sum(gaps < i)
+      mutations <-
+        c(mutations,
+          paste0(sub_i, variants_list[[i]][1], ">", variants_list[[i]][2]))
+      i <- i + 1
     }
   }
   mutations
@@ -482,22 +555,30 @@ find_variants_AA <- function(msa, target, ref="NC_012920"){
 #' names(aln) <- paste0("seq", 1:3)
 #' find_var_pos(aln, type="DNA")
 #'
-find_var_pos <- function(msa, type="AA"){
+find_var_pos <- function(msa, type = "AA") {
   msa_matrix <- as.matrix(msa)
 
   # find positions of non conserved columns
-  if(type=="AA"){
-    mismatch_positions <- which(apply(msa_matrix, 2, function(col) length(unique(col)) > 1 & !(any(unique(col)=="X") & length(unique(col))==2)))
+  if (type == "AA") {
+    mismatch_positions <-
+      which(apply(msa_matrix, 2, function(col)
+        length(unique(col)) > 1 &
+          !(any(unique(col) == "X") & length(unique(col)) == 2)))
   }
-  else if(type=="DNA"){
-    mismatch_positions <- which(apply(msa_matrix, 2, function(col) length(unique(col)) > 1 & !(any(unique(col)=="N") & length(unique(col))==2)))
+  else if (type == "DNA") {
+    mismatch_positions <-
+      which(apply(msa_matrix, 2, function(col)
+        length(unique(col)) > 1 &
+          !(any(unique(col) == "N") & length(unique(col)) == 2)))
   }
-  else{stop("Argument type not available!")}
+  else{
+    stop("Argument type not available!")
+  }
 
   # return something only if the msa is not totally conserved, otherwise is NULL
-  if(!identical(mismatch_positions, integer(0))){
+  if (!identical(mismatch_positions, integer(0))) {
     # extract only non conserved columns
-    non_cons_cols <- msa_matrix[, mismatch_positions, drop=FALSE]
+    non_cons_cols <- msa_matrix[, mismatch_positions, drop = FALSE]
     colnames(non_cons_cols) <- mismatch_positions
     non_cons_cols
   }

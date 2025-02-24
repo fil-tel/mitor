@@ -32,56 +32,71 @@
 #'
 #' @export
 #'
-fetch_seq <- function(query, dir_path, filename, create=TRUE, n=NULL, db = "nuccore", gb = FALSE){
-
-  if(create && file.exists(dir_path)){
-    cat("Warning! The directory alredy exists. All its content will be deleted.", '\n')
-    cont <- readline('Do you wish to continue? [y/n] ')
-    if(cont != 'y') stop('Aborted by user')
-  }
-
-  search <- rentrez::entrez_search(db = db,term = query, use_history = TRUE)
-
-  if (create) {
-    unlink(dir_path, recursive = TRUE, force = TRUE)
-    dir.create(dir_path, recursive = TRUE)
-  }
-
-
-  if (is.null(n)) {
-    n=search$count
-  }
-
-  else if(search$count<n){
-    n=search$count
-  }
-
-  for (seq_start in seq(1, n, 5000)) {
-    max = 5000
-    if (n - (seq_start - 1) < 5000) {
-      max = n - (seq_start - 1)
+fetch_seq <-
+  function(query,
+           dir_path,
+           filename,
+           create = TRUE,
+           n = NULL,
+           db = "nuccore",
+           gb = FALSE) {
+    if (create && file.exists(dir_path)) {
+      cat("Warning! The directory alredy exists. All its content will be deleted.",
+          '\n')
+      cont <- readline('Do you wish to continue? [y/n] ')
+      if (cont != 'y')
+        stop('Aborted by user')
     }
-    recs_fa <-
-      rentrez::entrez_fetch(
-        db = db,
-        web_history = search$web_history,
-        rettype = "fasta",
-        retmax = max,
-        retstart = seq_start - 1
-      )
-    write(recs_fa, file = paste0(dir_path,  "/", filename, ".fa"), append = TRUE)
-    if(gb){
-      recs_gb <-
+
+    search <-
+      rentrez::entrez_search(db = db,
+                             term = query,
+                             use_history = TRUE)
+
+    if (create) {
+      unlink(dir_path, recursive = TRUE, force = TRUE)
+      dir.create(dir_path, recursive = TRUE)
+    }
+
+
+    if (is.null(n)) {
+      n = search$count
+    }
+
+    else if (search$count < n) {
+      n = search$count
+    }
+
+    for (seq_start in seq(1, n, 5000)) {
+      max = 5000
+      if (n - (seq_start - 1) < 5000) {
+        max = n - (seq_start - 1)
+      }
+      recs_fa <-
         rentrez::entrez_fetch(
           db = db,
           web_history = search$web_history,
-          rettype = "gb",
+          rettype = "fasta",
           retmax = max,
           retstart = seq_start - 1
         )
-      write(recs_gb, file = paste0(dir_path, "/", filename, ".gb"), append = TRUE)
+      write(recs_fa,
+            file = paste0(dir_path,  "/", filename, ".fa"),
+            append = TRUE)
+      if (gb) {
+        recs_gb <-
+          rentrez::entrez_fetch(
+            db = db,
+            web_history = search$web_history,
+            rettype = "gb",
+            retmax = max,
+            retstart = seq_start - 1
+          )
+        write(recs_gb,
+              file = paste0(dir_path, "/", filename, ".gb"),
+              append = TRUE)
+      }
+      cat(seq_start + max - 1, "sequences downloaded\r")
     }
-    cat(seq_start + max - 1, "sequences downloaded\r")
-  }
 
-}
+  }
