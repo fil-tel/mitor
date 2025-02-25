@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mitor
+# mitor <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -46,7 +46,7 @@ up-to-date. `devtools::build_readme()` is handy for this.
 
 You can also embed plots, for example:
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+<img src="man/figures/README-pressure-1.pngpressure-1.png" width="100%" />
 
 In that case, don’t forget to commit and push the resulting figure
 files, so they display on GitHub and CRAN.
