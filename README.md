@@ -5,10 +5,6 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-<br>
-<hr>
-
-<br>
 
 ## Overview
 
