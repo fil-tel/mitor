@@ -19,16 +19,70 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of mitor is to ...
+## Overview
+
+*mitor* is a kit that provides a set of tools for the handling of human mitochondrial DNA (mtDNA) sequences and the identification and mapping of non-synonymous variants in the 3D structure of the electron transport chain (ETC) complexes in R.
+
+Originally, *mitor* was developed as a pipeline for characterizing, analyzing, and 3D visualizing the mutational landscape of archaic and modern human mtDNA sequences. As we realized its potential for broader applications and scenarios, we decided to develop it into a package, in the hope that it will be useful to future users.
+
+## Main features
+
+Here is a summary of *mitor*'s main features. The R package allows you to:
+
+- **Fetch mitochondrial sequences** from the [NCBI nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/) and download them on your local machine.
+- **Haplogroup classification** of mtDNA sequences using [*Haplogrep*](https://haplogrep.i-med.ac.at/).
+- **Handle a multiple sequence alignment (MSA) of human mtDNA sequences**, identify and extract the mitochondrial genes in the MSA, translate the coding sequences into amino acid sequences.
+- **Identify variable positions** in a MSA of mtDNA sequences.
+- **Mapping mitochondrial protein variable sites** for a given MSA onto the 3D structure of the ETC complexes and visualizing them using [PyMol](https://www.pymol.org/).
+- **Query the [MITOMAP](https://www.mitomap.org/allelesearch.html) allele search database** to obtain information regarding variants in the human population at given positions.
+- **Predict the structure of an amino acid sequence** using the [AlphaFold server](https://alphafoldserver.com/). **Note:** this feature is currently under maintenance because some bugs were encountered.
 
 ## Installation
 
-You can install the development version of mitor from [GitHub](https://github.com/) with:
+*mitor* can be installed directly from [GitHub](https://github.com/) using the following commands:
 
 ``` r
-# install.packages("pak")
-pak::pak("fil-tel/mitor")
+# install.packages("devtools")
+devtools::install_github("fil-tel/mitor")
 ```
+
+**Note:** to ensure that *mitor* works correctly it is recommended to manually install *Biostrings* from [Bioconductor](https://www.bioconductor.org/) and *genbankr* from [Github](https://github.com/gmbecker/genbankr) using the following commands:
+
+``` r
+# Installation of Biostrings
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Biostrings")
+```
+
+``` r
+# Installation of genbankr
+# install.packages("devtools")
+devtools::install_github("gmbecker/genbankr")
+```
+
+## External software
+
+*mitor* has several functions that relies on two external software: [PyMol](https://www.pymol.org/) and [Haplogrep](https://haplogrep.i-med.ac.at/). These **does not** come with the package and they have to be installed separetly by the user. You can install them following the instructions listed in their websites:
+
+- [PyMol](https://pymol.org/dokuwiki/doku.php?id=installation) - required for 3D visualization of mtDNA variant sites.
+- [Haplogrep](https://haplogrep.readthedocs.io/en/latest/installation/) - required for haplogroup classification.
+
+**Note that** if the software's binaries are not found in the R's PATH variable, you need to manually add them adding these two lines to your *.Renviron* file.
+
+``` r
+## Add haplogrep binary's directory to PATH variable
+PATH="${PATH}:/path/to/haplogrep/"
+## Add pymol binary's directory to PATH variable
+PATH="${PATH}:/path/to/pymol"
+```
+
+The *.Renviorn* file is usually found in *~/*.
+
+## Operating System Support
+
+*mitor* has only been tested on Linux (Ubuntu version 22.04). Some features will definitely not work on other Operating Systems.
 
 ## Example
 
