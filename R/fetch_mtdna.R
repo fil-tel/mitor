@@ -1,3 +1,14 @@
+# function to clean the record ids in the files and keep only the accession ID (maybe to add in fetch function?)
+# Example.
+# FROM NC_013993.1 Homo sp. Altai mitochondrion, complete genome TO NC_013993.1
+
+clean_fasta_ids <- function(path2file){
+  dnaset <- Biostrings::readDNAStringSet(path2file)
+  names(dnaset) <- sapply(strsplit(names(dnaset), split = " "), "[[", 1)
+  Biostrings::writeXStringSet(dnaset, filepath = path2file)
+}
+
+
 #' Fetching Sequences From The NCBI Database
 #'
 #' `fetch_seq()` fetches sequences from the specified NCBI database and save them in a specified directory on your machine.
@@ -99,5 +110,7 @@ fetch_seq <-
       }
       cat(seq_start + max - 1, "sequences downloaded\r")
     }
+
+    clean_fasta_ids(paste0(dir_path,  "/", filename, ".fa"))
 
   }
