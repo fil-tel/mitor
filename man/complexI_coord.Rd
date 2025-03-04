@@ -13,18 +13,18 @@ A \code{data frame}.
 \item{\code{x}}{Numeric. x coordinate. }
 \item{\code{y}}{Numeric. y coordinate. }
 \item{\code{z}}{Numeric. z coordinate. }
-\item{\code{Location}}{Character. Location of the residue in the complex (\textit{intermembrane, membrane, matrix.}}
+\item{\code{Location}}{Character. Location of the residue in the complex (intermembrane, membrane, matrix.}
 }
 }
 \usage{
 complexI_coord
 }
 \description{
-This data frame contains the coordinates of the carbon $\alpha$ of the amino acids of the mitochondrial encoded subunits of
+This data frame contains the coordinates of the carbon \eqn{\alpha} of the amino acids of the mitochondrial encoded subunits of
 Complex I (MT-ND1, MT-ND2, MT-ND3, MT-ND4, MT-ND4L, MT-ND5, MT-ND6).
 }
 \details{
-This data frame contains the coordinates of the carbon $\alpha$ of the amino acids of the mitochondrial encoded subunits of
+This data frame contains the coordinates of the carbon \eqn{\alpha} of the amino acids of the mitochondrial encoded subunits of
 Complex I (MT-ND1, MT-ND2, MT-ND3, MT-ND4, MT-ND4L, MT-ND5, MT-ND6). The structure use to extract the coordinates it's available
 \href{https://opm.phar.umich.edu/proteins/3532}{here}. The scripts used to extract the coordinates are available in the
 directory \code{inst/scripts/coordinates/} available in the directory where the package \code{mitor} was installed.
