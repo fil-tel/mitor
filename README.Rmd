@@ -30,7 +30,7 @@ Originally, *mitor* was developed as a pipeline for characterizing, analyzing, a
 Here is a summary of *mitor*'s main features. The R package allows you to:
 
 - **Fetch mitochondrial sequences** from the [NCBI nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/) and download them on your local machine.
-- **Haplogroup classification** of mtDNA sequences using [*Haplogrep*](https://haplogrep.i-med.ac.at/).
+- **Haplogroup classification** of mtDNA sequences using [Haplogrep](https://haplogrep.i-med.ac.at/).
 - **Handle a multiple sequence alignment (MSA) of human mtDNA sequences**, identify and extract the mitochondrial genes in the MSA, translate the coding sequences into amino acid sequences.
 - **Identify variable positions** in a MSA of mtDNA sequences.
 - **Mapping mitochondrial protein variable sites** for a given MSA onto the 3D structure of the ETC complexes and visualizing them using [PyMol](https://www.pymol.org/).

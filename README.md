@@ -28,7 +28,7 @@ to:
   database](https://www.ncbi.nlm.nih.gov/nucleotide/) and download them
   on your local machine.
 - **Haplogroup classification** of mtDNA sequences using
-  [*Haplogrep*](https://haplogrep.i-med.ac.at/).
+  [Haplogrep](https://haplogrep.i-med.ac.at/).
 - **Handle a multiple sequence alignment (MSA) of human mtDNA
   sequences**, identify and extract the mitochondrial genes in the MSA,
   translate the coding sequences into amino acid sequences.

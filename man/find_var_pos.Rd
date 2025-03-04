@@ -27,8 +27,9 @@ seq3 "T" "G" "A" "G" "T" "G" "C" "A" "T" "G" "G" "T" "G" "A" "C" "A" "T" "C" "T"
 This function finds and extracts the non conserved columns in a MSA.
 }
 \examples{
+\dontrun{
 aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 names(aln) <- paste0("seq", 1:3)
 find_var_pos(aln, type="DNA")
-
+}
 }

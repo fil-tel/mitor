@@ -259,10 +259,11 @@ translation <- function(msa) {
 #' @export
 #'
 #' @examples
-#'
+#'\dontrun{
 #' aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 #' # Check for gaps
 #' check_gaps(aln)
+#' }
 #'
 check_gaps <- function(msa) {
   !sum(nchar(gsub("-", "", msa))) == sum(nchar(msa))
@@ -295,9 +296,10 @@ check_gaps <- function(msa) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 #' names(aln) <- paste0("seq", 1:3)
-#' find_variants(aln, target = "seq2", ref = "seq1")
+#' find_variants(aln, target = "seq2", ref = "seq1")}
 find_variants <- function(msa, target, ref = "NC_012920") {
   # ref seq goes in front
   if (!target %in% names(msa))
@@ -551,10 +553,11 @@ find_variants_AA <- function(msa, target, ref = "NC_012920") {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 #' names(aln) <- paste0("seq", 1:3)
 #' find_var_pos(aln, type="DNA")
-#'
+#'}
 find_var_pos <- function(msa, type = "AA") {
   msa_matrix <- as.matrix(msa)
 

@@ -35,7 +35,7 @@ classify_haplogroup <- function(sequences) {
   if (Sys.which("haplogrep3") == "")
     stop(
       "The haplogrep binary couldn't be found. \n Did you add it to your PATH variable? \n
-  Visit GITHUBLINK for a step-by-step guide.                                                                   Visit githublink for a step-by-step guide."
+  Visit https://github.com/fil-tel/mitor for a step-by-step guide.                                                                   Visit githublink for a step-by-step guide."
     )
 
   # if sequences have IUPAC ambiguities not accepted by haplogrep they will be removed
@@ -75,5 +75,3 @@ classify_haplogroup <- function(sequences) {
   return(result)
 }
 
-# to remember and add in the github
-# Sys.setenv(PATH = paste("/home/filippo/haplogrep", Sys.getenv("PATH"), sep = ":"))

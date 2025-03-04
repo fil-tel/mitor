@@ -25,10 +25,11 @@
 #' @param filename String. Name you want to give to the file.
 #'
 #' @examples
+#' \dontrun{
 #' ref_query <- "NC_012920"
 #' ref_path <- "data/mtdna/ref"
 #' fetch_seq(ref_query, ref_path, filename = "ref", gb = TRUE)
-#'
+#'}
 #'
 #' @export
 #'

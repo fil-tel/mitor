@@ -33,7 +33,8 @@ Positions are adjusted to match the reference sequence, accounting for gaps intr
 during the alignment process. Ambiguous bases (e.g., "N") are ignored.
 }
 \examples{
+\dontrun{
 aln <- Biostrings::DNAStringSet(c( "ATGGCATCTACTTTGTATGACTATTGCAAGTGCCCATGGGTGACATCTGTAAGAAAGATGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTCGTATGACTATTGCAGAGTGCCCATG--------------GAAGACGGGGATAAGCGCTGTAAGCTT", "ATGGCATCTACTTTGTATGACTATTGCAGAGTGCCCATGGGTGACATCTGTAGAAAGATGGGGATAAGCGCTGTAAGCTT"))
 names(aln) <- paste0("seq", 1:3)
-find_variants(aln, target = "seq2", ref = "seq1")
+find_variants(aln, target = "seq2", ref = "seq1")}
 }

@@ -1,13 +1,16 @@
 process_curl <- function(input_file) {
   curl_content <- readLines(input_file, warn = FALSE)
-  url <- gsub("'", "", unlist(strsplit(curl_content, split = " "))[2])
+  url <-
+    gsub("'", "", unlist(strsplit(curl_content, split = " "))[2])
 
   headers_pattern <- "-H '([^']*)'"
-  headers <- regmatches(curl_content, gregexpr(headers_pattern, curl_content))[[1]]
+  headers <-
+    regmatches(curl_content, gregexpr(headers_pattern, curl_content))[[1]]
   headers <- gsub("-H '", "", headers)
   headers <- gsub("'$", "", headers)
 
-  post_data <-  gsub("'", "",unlist(strsplit(curl_content, split = "--data-raw "))[2])
+  post_data <-
+    gsub("'", "", unlist(strsplit(curl_content, split = "--data-raw "))[2])
 
   generic <- stringr::str_extract(post_data, "(?<=generic).*")
 
@@ -21,12 +24,19 @@ process_curl <- function(input_file) {
     }
   }
 
-  return(list(url = url, headers = headers_dic, generic = generic))
+  return(list(
+    url = url,
+    headers = headers_dic,
+    generic = generic
+  ))
 }
 
 
-download_zip <- function(dir, name, download_code, list){
-  url <- paste0("https://alphafoldserver.com/_/v2/folds/", download_code, "/fold.zip")
+download_zip <- function(dir, name, download_code, list) {
+  url <-
+    paste0("https://alphafoldserver.com/_/v2/folds/",
+           download_code,
+           "/fold.zip")
 
   headers <- httr::add_headers(
     `User-Agent` = as.character(list["User-Agent"]),
@@ -45,18 +55,18 @@ download_zip <- function(dir, name, download_code, list){
     `TE` = "trailers"
   )
 
-  status=500
-  while(status!=200){
-  Sys.sleep(45)
-  response <- httr::GET(url, headers)
-  status=httr::status_code(response)
-  # print(status)
-  if (status == 200) {
-    Sys.sleep(5)
-    file_path <- paste0(dir, "/" , name, ".zip")
-    writeBin(content(response, "raw"), file_path)
-    cat(paste0("The file ", name, ".zip has bin downloaded in ", file_path))
-  }
+  status = 500
+  while (status != 200) {
+    Sys.sleep(45)
+    response <- httr::GET(url, headers)
+    status = httr::status_code(response)
+    # print(status)
+    if (status == 200) {
+      Sys.sleep(5)
+      file_path <- paste0(dir, "/" , name, ".zip")
+      writeBin(content(response, "raw"), file_path)
+      cat(paste0("The file ", name, ".zip has bin downloaded in ", file_path))
+    }
   }
 }
 
@@ -69,26 +79,41 @@ download_zip <- function(dir, name, download_code, list){
 #' @export
 #'
 #'
-predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
-
+predict_af3 <- function(seq = NULL,
+                        name = NULL,
+                        dir = NULL) {
   # make sure is a String
   seq <- as.character(seq)
   # check that all the arguments are respected
-  if(!grepl(paste0("^[", paste0(Biostrings::AA_ALPHABET[1:20], collapse = ""), "]+$"), seq, ignore.case = TRUE)) stop("The AA sequence contains character that are not accepted.")
-  if(is.null(seq)) stop("You need to pass a protein sequence!")
-  if(is.null(name)) stop("You need to pass a name for yout job!")
-  if(is.null(dir)) dir = getwd()
+  if (!grepl(paste0("^[", paste0(Biostrings::AA_ALPHABET[1:20], collapse = ""), "]+$"), seq, ignore.case = TRUE))
+    stop("The AA sequence contains character that are not accepted.")
+  if (is.null(seq))
+    stop("You need to pass a protein sequence!")
+  if (is.null(name))
+    stop("You need to pass a name for yout job!")
+  if (is.null(dir))
+    dir = getwd()
 
   path <- system.file("extdata", "curl.txt", package = "mitor")
-  if(identical(readLines(path), character(0))){
-    stop("You didn't provide your cookies to access the AlphaFold3 server. Follow the instructions here:
-         linktogthub")
+  if (identical(readLines(path), character(0))) {
+    stop(
+      "You didn't provide your cookies to access the AlphaFold3 server.\n Follow the instructions here:\n\n
+         https://github.com/fil-tel/mitor"
+    )
   }
   else{
     list_post <- process_curl(path)
   }
 
-  post_data <- paste0("f.req=%5B%5B%5B%22kMnDgb%22%2C%22%5B%5B%5C%22", name, "%5C%22%2C%5B%5B%5Bnull%2C%5C%22", toupper(seq), "%5C%22%2Cnull%2Cnull%2Cnull%2Cnull%2C1%5D%5D%5D%5D%2C1%2C%5B2093574080%5D%5D%22%2Cnull%2C%22generic ",list_post$generic)
+  post_data <-
+    paste0(
+      "f.req=%5B%5B%5B%22kMnDgb%22%2C%22%5B%5B%5C%22",
+      name,
+      "%5C%22%2C%5B%5B%5Bnull%2C%5C%22",
+      toupper(seq),
+      "%5C%22%2Cnull%2Cnull%2Cnull%2Cnull%2C1%5D%5D%5D%5D%2C1%2C%5B2093574080%5D%5D%22%2Cnull%2C%22generic ",
+      list_post$generic
+    )
 
   response <- httr::POST(
     list_post$url,
@@ -97,17 +122,32 @@ predict_af3 <- function(seq = NULL, name = NULL, dir = NULL){
     encode = "raw"
   )
 
-  if(response$status_code==200) cat("The call to the server went well! Wait sometime for the download!\n")
-  else stop(paste0("OPS! Something went wrong!", "Error:", httr::status_code(response), "\n"))
+  if (response$status_code == 200)
+    cat("The call to the server went well! Wait sometime for the download!\n")
+  else
+    stop(paste0(
+      "OPS! Something went wrong!",
+      "Error:",
+      httr::status_code(response),
+      "\n"
+    ))
 
-  download_code <- unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
-  if(is.na(download_code)) stop("Oops! Looks like you've hit your daily quota. Please submit after your quota refreshes around midnight UTC.")
+  download_code <-
+    unlist(strsplit(rawToChar(response$content), "\\\\\\\""))[2]
+  if (is.na(download_code))
+    stop(
+      "Oops! Looks like you've hit your daily quota. Please submit after your quota refreshes around midnight UTC."
+    )
   cat(download_code, "\n")
   dir.create(dir, recursive = TRUE)
   future::plan(future::multisession)
-  future::future(download_zip(dir = dir, name = name, download_code = download_code, list = list_post$headers), packages = "httr")
+  future::future(
+    download_zip(
+      dir = dir,
+      name = name,
+      download_code = download_code,
+      list = list_post$headers
+    ),
+    packages = "httr"
+  )
 }
-
-
-
-

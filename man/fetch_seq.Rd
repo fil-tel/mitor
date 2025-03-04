@@ -48,9 +48,10 @@ The sequences will be downloaded and stored in a FASTA files with maximum 5000 s
 downloaded.
 }
 \examples{
+\dontrun{
 ref_query <- "NC_012920"
 ref_path <- "data/mtdna/ref"
 fetch_seq(ref_query, ref_path, filename = "ref", gb = TRUE)
-
+}
 
 }
