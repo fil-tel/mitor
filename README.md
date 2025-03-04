@@ -1,10 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mitor <img src="man/figures/logo.png" align="right" height="139" alt="" />
+# mitor <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
+<br>
+<hr>
+
+<br>
 
 ## Overview
 
