@@ -1,0 +1,172 @@
+---
+title: "vignette-1-basics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette-1-basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Motivation
+
+The motivation behind *mitor* was originally to develop a pipeline to characterize and analyze the variable sites of archaic and modern humans, with a specific focus on mapping the non-synonymous mutations onto the 3D structure of the Electron Transport Chain (ETC) complexes. As we realized its potential for broader applications and scenarios, we decided to develop it into a package, in the hope that it will be useful to future users.
+
+## Installation
+
+*mitor* can be installed directly from [GitHub](https://github.com/) using the following commands:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("fil-tel/mitor")
+```
+
+**Note:** to ensure that *mitor* works correctly it is recommended to manually install *Biostrings* from [Bioconductor](https://www.bioconductor.org/) and *genbankr* from [Github](https://github.com/gmbecker/genbankr) using the following commands:
+
+``` r
+# Installation of Biostrings
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Biostrings")
+```
+
+``` r
+# Installation of genbankr
+# install.packages("devtools")
+devtools::install_github("gmbecker/genbankr")
+```
+
+## External software
+
+*mitor* has several functions that relies on two external software: [PyMol](https://www.pymol.org/) and [Haplogrep](https://haplogrep.i-med.ac.at/). These **does not** come with the package and they have to be installed separetly by the user. You can install them following the instructions listed in their websites:
+
+- [PyMol](https://pymol.org/dokuwiki/doku.php?id=installation) - required for 3D visualization of mtDNA variant sites.
+- [Haplogrep](https://haplogrep.readthedocs.io/en/latest/installation/) - required for haplogroup classification.
+
+**Note that** if the software's binaries are not found in the R's PATH variable, you need to manually add them adding these two lines to your *.Renviron* file.
+
+``` r
+## Add haplogrep binary's directory to PATH variable
+PATH="${PATH}:/path/to/haplogrep/"
+## Add pymol binary's directory to PATH variable
+PATH="${PATH}:/path/to/pymol"
+```
+
+The *.Renviorn* file is usually found in *~/*.
+
+## Tutorial
+
+In this tutorial, I will go through some simple functionalities of *mitor*. In particular, I will show:
+
+- How to fetch some mitochondrial sequences from the NCBI database.
+- How to use them to perform a multiple sequence alignment (MSA).
+- How to identify the gene coordinates and extract the different classes of genes in the MSA.
+- How to translate the protein coding sequences into amino acid sequences.  
+
+## Fetching mtDNA sequences
+
+In this vignette we will go through some examples on how to use *mitor*. Here, we will query the [NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/) to retrieve 1000 *Homo Sapiens* mtDNA sequences.
+
+First, we load the *mitor* package.
+
+```{r loading, eval=FALSE}
+library(mitor)
+```
+
+After the package is loaded, we now define a query to fetch *Homo Sapiens* mtDNA sequences from the [NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/). For more information regarding the query structure check their [website](https://www.ncbi.nlm.nih.gov/books/NBK44863/).
+
+```{r query, eval=FALSE}
+query <-
+  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]" 
+```
+
+The query I am using has several filters:
+
+- **(016500[SLEN]:016600[SLEN])** specifies that I want only sequences with length between 16500 and 16600 bases.
+- **mitochondrion[FILT]** specifies to include only mitochondrial sequences.
+- **txid9606[orgn]** specifies that the sequences have to belong to *Homo Sapiens*.
+- **NOT txid63221[orgn] NOT txid741158[orgn]** specifies to not include the *Homo Sapiens* subspecies *Neanderthals* and *Denisovans*.
+- **NOT NC_012920.1[accn]** specifies to not include the revised Cambridge Reference Sequence, since it already comes with *mitor*.
+
+Now, we can retrieve the sequences using the *fetch_seq* function. To fetch the first 1000 set *n=1000*.
+
+```{r fetch, eval=FALSE}
+# Define name of direcotry where to save the sequences
+dir_path <- "data"
+# Define the filename
+filename <- "hs_mtDNA"
+fetch_seq(query = query,
+          dir_path = dir_path,
+          filename = filename, n = 1000)
+```
+
+## Preparing the sequences for the Multiple Sequence Alignment
+Now we can load the downloaded sequences using *Biostrings*.
+
+```{r, eval=FALSE}
+hs_seqs <- Biostrings::readDNAStringSet("data/hs_mtDNA.fa")
+```
+
+We are now interesting in performing a multiple sequence alignment (MSA) and identifying the genes' coordinates in it. To do so, we will need to include in our set of sequences a reference sequence. I will use the revised Cambridge Reference Sequence (rCRS), that it's the accepted reference standard for human mitochondrial DNA. This sequence come with the package (its varaible name is *rCRS*, and there is no need to download it (that's why I excluded it in the query).
+
+```{r, eval=FALSE}
+# Add the 
+seqs2align <- c(rCRS, hs_seqs)
+```
+
+## Multiple Sequence Alignment
+
+*mitor* does not come with any algorithm to perform MSA. This is up to the user on which software and algorithm to use it. If you prefer to stay in the R environment, the package [*msa*](https://www.bioconductor.org/packages/release/bioc/html/msa.html) can do the job.
+
+In my case, I use the [*clustalo*](http://www.clustal.org/omega/) software that is an implementation of the Clustal Omega algorithm.
+
+Once the MSA has been obtained, it can be loaded in R.
+
+```{r, eval=FALSE}
+my_msa <- Biostrings::readDNAStringSet("my_msa.fa")
+```
+
+## Obtaining genes' coordinates in the MSA
+
+Now we are interested in identifying the mitochondrial genes (22 tRNAs, 2 rRNAs, 13 protein coding genes) in the MSA. To know where the genes are located we will use the rCRS. As the MSA was built, gaps were much likely inserted in the rCRS. The presence of gaps makes it not possible to use the original genes' coordinates of the rCRS. For this reason, we need to adjust these coordinates accounting for the gaps. This can be done by using the *genes_coord* function.
+
+```{r, eval=FALSE}
+# Data frame containing the adjusted coordinates of the genes in the MSA
+adj_coord_df <- genes_coord(my_msa)
+```
+
+
+## Extracting genes from the MSA
+
+Now that we obtain the coordinates of the genes in the MSA, we can proceed with extracting them (obtaining the subset of the MSA corresponding to each gene).
+
+We can do this using 3 different functions, according to the class of genes we are interested in (tRNA, rRNA, protein coding).
+
+```{r, eval=FALSE}
+# Extract rRNAs, the data frame with the genes coordinates has to be passed to the function
+rrnas <- extract_rrna(my_msa, adj_coord_df)
+# Extract tRNAs, the data frame with the genes coordinates has to be passed to the function
+trnas <- extract_trna(my_msa, adj_coord_df)
+# Extract CDS, the data frame with the genes coordinates has to be passed to the function
+cds <- extract_cds(my_msa, adj_coord_df)
+```
+
+Each variable is a list whose names correspond to the name of the genes (e.g. ND5, TRNF, RNR2, etc.).
+
+## Translate protein coding sequences into AA sequences
+
+We can now, translate the CDS into AA sequences, for example to find which residues differ between the seqeunces.
+
+```{r, eval=FALSE}
+proteins <- lapply(cds, translation)
+```
+
+
+Now it's up to you how you want to use these data. For example, you can be interested in finding which are the variable position, or in building phylogenetic trees for each class of genes, and comapreing them.
