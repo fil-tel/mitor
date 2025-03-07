@@ -1,0 +1,92 @@
+---
+title: "Installation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette-00-installation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Motivation
+
+The motivation behind *mitor* was originally to develop a pipeline to characterize and analyze the variable sites of archaic and modern humans, with a specific focus on mapping the non-synonymous mutations onto the 3D structure of the Electron Transport Chain (ETC) complexes. As we realized its potential for broader applications and scenarios, we decided to develop it into a package, in the hope that it will be useful to future users.
+
+## Installation
+
+*mitor* can be installed directly from [GitHub](https://github.com/) using the following commands:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("fil-tel/mitor")
+```
+
+**Note:** to ensure that *mitor* works correctly it is recommended to manually install *Biostrings* from [Bioconductor](https://www.bioconductor.org/) and *genbankr* from [Github](https://github.com/gmbecker/genbankr) using the following commands:
+
+``` r
+# Installation of Biostrings
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Biostrings")
+```
+
+``` r
+# Installation of genbankr
+# install.packages("devtools")
+devtools::install_github("gmbecker/genbankr")
+```
+
+## External software
+
+*mitor* has several functions that relies on two external software: [PyMol](https://www.pymol.org/) and [Haplogrep](https://haplogrep.i-med.ac.at/). These **does not** come with the package and they have to be installed separetly by the user. You can install them following the instructions listed in their websites:
+
+- [PyMol](https://pymol.org/dokuwiki/doku.php?id=installation) - required for 3D visualization of mtDNA variant sites.
+- [Haplogrep](https://haplogrep.readthedocs.io/en/latest/installation/) - required for haplogroup classification.
+
+**Note that** if the software's binaries are not found in the R's PATH variable, you need to manually add them adding these two lines to your *.Renviron* file.
+
+``` r
+## Add haplogrep binary's directory to PATH variable
+PATH="${PATH}:/path/to/haplogrep/"
+## Add pymol binary's directory to PATH variable
+PATH="${PATH}:/path/to/pymol"
+```
+
+The *.Renviorn* file is usually found in *~/*.
+
+## AlphaFold Server
+
+One of *mitor*'s features is predicting the 3D structure of a given amino acid sequence using the [AlphaFold Server](https://alphafoldserver.com/). In order to "unlock" this feature it is necessary to follow this step-by-step guide:
+
+- **Create an account.** [AlphaFold Server](https://alphafoldserver.com/) requires you to create an account (you can log in using your Google account).
+- **Main page**. Once you created your account and logged in you will have something like this:
+
+![AlphaFold Server main page.](man/figures/alphafold_main.png)
+
+- **Copy request as cURL.** When submitting a job to the server, the server needs to know who is submitting the request. For this reason, AlphaFold Server is assigning you a token that identifies your account and some other information. As *mitor* needs to have access to this data to be able to submit jobs to the server, what you need to do now is to copy a call as cURL.
+Once on the main page, open the Web Developer Tools right-clicking anywhere in the page and selecting *Inspect(Q)*:
+
+![Web Developer Tools](man/figures/inspect.png)
+
+- Now a section like this will open, select the Network option:
+
+![Network](man/figures/network.png)
+
+- At this point, select one of the POST requests, right-click on it and select  *Copy Value*, and then *Copy as cURL*:
+
+![Copy as cURL](man/figures/curl.png)
+
+- Now you are almost done, go to the directory where you installed *mitor* (find.package("mitor") in R), and paste the cURL request in the *curl.txt* file that you find in *mitor/extdata/*.
+
+- **You are now done!**
+
+## Operating System Support
+
+*mitor* has only been tested on Linux (Ubuntu version 22.04). Some features will definitely not work on other Operating Systems.
