@@ -40,7 +40,7 @@ to:
   allele search database** to obtain information regarding variants in
   the human population at given positions.
 - **Predict the structure of an amino acid sequence** using the
-  [AlphaFold server](https://alphafoldserver.com/). **Note:** this
+  [AlphaFold Server](https://alphafoldserver.com/). **Note:** this
   feature is currently under maintenance because some bugs were
   encountered.
 
@@ -100,6 +100,60 @@ PATH="${PATH}:/path/to/pymol"
 ```
 
 The *.Renviorn* file is usually found in *~/*.
+
+## AlphaFold Server
+
+One of *mitor*’s features is predicting the 3D structure of a given
+amino acid sequence using the [AlphaFold
+Server](https://alphafoldserver.com/). In order to “unlock” this feature
+it is necessary to follow this step-by-step guide:
+
+- **Create an account.** [AlphaFold
+  Server](https://alphafoldserver.com/) requires you to create an
+  account (you can log in using your Google account).
+- **Main page**. Once you created your account and logged in you will
+  have something like this:
+
+<figure>
+<img src="man/figures/alphafold_main.png"
+alt="AlphaFold Server main page." />
+<figcaption aria-hidden="true">AlphaFold Server main page.</figcaption>
+</figure>
+
+- **Copy request as cURL.** When submitting a job to the server, the
+  server needs to know who is submitting the request. For this reason,
+  AlphaFold Server is assigning you a token that identifies your account
+  and some other information. As *mitor* needs to have access to this
+  data to be able to submit jobs to the server, what you need to do now
+  is to copy a call as cURL. Once on the main page, open the Web
+  Developer Tools right-clicking anywhere in the page and selecting
+  *Inspect(Q)*:
+
+<figure>
+<img src="man/figures/inspect.png" alt="Web Developer Tools" />
+<figcaption aria-hidden="true">Web Developer Tools</figcaption>
+</figure>
+
+- Now a section like this will open, select the Network option:
+
+<figure>
+<img src="man/figures/network.png" alt="Network" />
+<figcaption aria-hidden="true">Network</figcaption>
+</figure>
+
+- At this point, select one of the POST requests, right-click on it and
+  select *Copy Value*, and then *Copy as cURL*:
+
+<figure>
+<img src="man/figures/curl.png" alt="Copy as cURL" />
+<figcaption aria-hidden="true">Copy as cURL</figcaption>
+</figure>
+
+- Now you are almost done, go to the directory where you installed
+  *mitor* (find.package(“mitor”) in R), and paste the cURL request in
+  the *curl.txt* file that you find in *mitor/extdata/*.
+
+- **You are now done!**
 
 ## Operating System Support
 
