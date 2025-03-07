@@ -2,7 +2,7 @@
 title: "Basic tutorial"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{vignette-1-basics}
+  %\VignetteIndexEntry{Basic tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
