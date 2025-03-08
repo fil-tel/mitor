@@ -68,8 +68,10 @@ hs_seqs <- Biostrings::readDNAStringSet("data/hs_mtDNA.fa")
 We are now interesting in performing a multiple sequence alignment (MSA) and identifying the genes' coordinates in it. To do so, we will need to include in our set of sequences a reference sequence. I will use the revised Cambridge Reference Sequence (rCRS), that it's the accepted reference standard for human mitochondrial DNA. This sequence come with the package (its varaible name is *rCRS*, and there is no need to download it (that's why I excluded it in the query).
 
 ```{r, eval=FALSE}
-# Add the 
+# Add the rCRS to the set of sequences 
 seqs2align <- c(rCRS, hs_seqs)
+# To save the sequences on a fasta file
+Biostrings::writeXStringSet(x = seqs2align, filepath = "path/to/file.fa")
 ```
 
 ## Multiple Sequence Alignment
