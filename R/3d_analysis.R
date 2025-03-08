@@ -20,3 +20,33 @@ k_t <- function(variants, complex = NULL) {
 
 
 }
+
+#' Get 3D Coordinates of Protein Variants
+#'
+#' @param prot_list
+#' @param t
+#'
+#' @return Data frame containing the 3D coordinates of the positions of non-synonymous variants
+#' @export
+#'
+get_coords <- function(prot_list, t=NULL){
+  prot_df <- data.frame(Protein = character(),
+                        Protein_position = character(),
+                        Pattern = character(),
+                        stringsAsFactors = FALSE)
+  if(is.null(t)){
+    ls <- lapply(prot_list, function(x) colnames(find_var_pos(x)))
+  }
+  else{
+    ls <- lapply(prot_list, function(x) find_var_pos(x, t = t))
+  }
+
+  for (name in names(ls)) {
+    for (pos in ls[[name]]) {
+      prot_df <- rbind(prot_df, cbind(data.frame("Protein" = paste0("MT-", name), "Pos"=pos)))
+    }
+  }
+  merge(prot_df, rbind(complexI_coord, complexIII_coord, complexIV_coord, complexV_coord), by=c("Protein", "Pos"))
+}
+
+get_coords(protein_list, t=0.99)
