@@ -536,11 +536,12 @@ find_variants_AA <- function(msa, target, ref = "NC_012920") {
 
 #' Find Non Conserved Columns in a Multiple Sequence Alignment (MSA)
 #'
-#' This function finds and extracts the non conserved columns in a MSA.
+#' This function finds and extracts the non conserved columns in a MSA. It is possible to set a threshold to select only sites that show a certain degree of variations on the MSA.
 #'
 #' @param msa A multiple sequence alignment object, a `DNAStringSet`
 #'            from the `Biostrings` package.
 #' @param type String. Type of MSA, amino acids ("AA") or nucleotides ("DNA").
+#' @param t Double. Frequency threshold, select positions in the MSA which its most conserved amino acid/nucleotide has a frequency of at most *t*.
 #'
 #' @return Matrix. The function returns a matrix that looks like this. The names of the columns coresponds to the
 #' position in the MSA, while the rownames to the name of the sequence.
@@ -558,32 +559,39 @@ find_variants_AA <- function(msa, target, ref = "NC_012920") {
 #' names(aln) <- paste0("seq", 1:3)
 #' find_var_pos(aln, type="DNA")
 #'}
-find_var_pos <- function(msa, type = "AA") {
+find_var_pos <- function(msa, type = "AA", t=NULL) {
   msa_matrix <- as.matrix(msa)
 
-  # find positions of non conserved columns
-  if (type == "AA") {
-    mismatch_positions <-
-      which(apply(msa_matrix, 2, function(col)
-        length(unique(col)) > 1 &
-          !(any(unique(col) == "X") & length(unique(col)) == 2)))
-  }
-  else if (type == "DNA") {
-    mismatch_positions <-
-      which(apply(msa_matrix, 2, function(col)
-        length(unique(col)) > 1 &
-          !(any(unique(col) == "N") & length(unique(col)) == 2)))
+  if(is.null(t)){
+    # find positions of non conserved columns
+    if (type == "AA") {
+      mismatch_positions <-
+        which(apply(msa_matrix, 2, function(col)
+          length(unique(col)) > 1 &
+            !(any(unique(col) == "X") & length(unique(col)) == 2)))
+    }
+    else if (type == "DNA") {
+      mismatch_positions <-
+        which(apply(msa_matrix, 2, function(col)
+          length(unique(col)) > 1 &
+            !(any(unique(col) == "N") & length(unique(col)) == 2)))
+    }
+    else{
+      stop("Argument type not available!")
+    }
+
+    # return something only if the msa is not totally conserved, otherwise is NULL
+    if (!identical(mismatch_positions, integer(0))) {
+      # extract only non conserved columns
+      non_cons_cols <- msa_matrix[, mismatch_positions, drop = FALSE]
+      colnames(non_cons_cols) <- mismatch_positions
+      non_cons_cols
+    }
   }
   else{
-    stop("Argument type not available!")
-  }
-
-  # return something only if the msa is not totally conserved, otherwise is NULL
-  if (!identical(mismatch_positions, integer(0))) {
-    # extract only non conserved columns
-    non_cons_cols <- msa_matrix[, mismatch_positions, drop = FALSE]
-    colnames(non_cons_cols) <- mismatch_positions
-    non_cons_cols
+    freq_table <- Biostrings::consensusMatrix(msa, as.prob = TRUE)
+    res <- unlist(sapply(seq(ncol(freq_table)), function(i) if(max(freq_table[, i])<=t) i))
+    res
   }
 
 }
