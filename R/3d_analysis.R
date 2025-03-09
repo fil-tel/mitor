@@ -49,4 +49,41 @@ get_coords <- function(prot_list, t=NULL){
   merge(prot_df, rbind(complexI_coord, complexIII_coord, complexIV_coord, complexV_coord), by=c("Protein", "Pos"))
 }
 
-# get_coords(protein_list, t=0.99)
+#' Map Non-Synonymous Variants To Protein Structure
+#'
+#' @param variants
+#' @param complex
+#'
+#' @return
+#' @export
+#'
+#'
+map_variants <- function(variants, complex=NULL){
+  if (Sys.which("pymol") == "")
+    stop(
+      "The pymol binary couldn't be found. \n Did you add it to your PATH variable? \n
+  Visit https://github.com/fil-tel/mitor for a step-by-step guide.                                                                   Visit githublink for a step-by-step guide."
+    )
+  if(is.null(complex)) stop("You have to specify which Electron Transport Chain complex you want to visualize!\n")
+  df <- switch (
+    complex,
+    I = merge(complexI_coord, variants),
+    III = merge(complexIII_coord, variants),
+    IV = merge(complexIV_coord, variants),
+    V = merge(complexV_coord, variants)
+  )
+
+  struc <- switch (complex,
+                   I = "5xtd.pdb",
+                   III = "5xte.pdb",
+                   IV = "5z62.pdb",
+                   V = "8h9t.pdb"
+  )
+  input_file <- tempfile(fileext = ".txt")
+  write.csv(df, input_file, row.names = FALSE, quote = FALSE)
+  script <- system.file("extdata", "pymol4mitor.py", package = "mitor")
+  struc_path <- system.file("extdata/pdb", struc, package = "mitor")
+
+  future::plan(future::multisession)
+  future::future(system(paste0("pymol ", script, " ", input_file, " ", struc_path, " ", complex)))
+}
