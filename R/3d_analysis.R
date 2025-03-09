@@ -49,4 +49,4 @@ get_coords <- function(prot_list, t=NULL){
   merge(prot_df, rbind(complexI_coord, complexIII_coord, complexIV_coord, complexV_coord), by=c("Protein", "Pos"))
 }
 
-get_coords(protein_list, t=0.99)
+# get_coords(protein_list, t=0.99)
