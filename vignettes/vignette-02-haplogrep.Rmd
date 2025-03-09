@@ -1,0 +1,58 @@
+---
+title: "Haplogroups classification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Haplogroups classification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this tutorial, I will show how to use *mitor* and *haplogrep* to classify haplogroups of downloaded sequences. In particular, I will show:
+
+- How to fetch some mitochondrial sequences from the NCBI database.
+- How to classify their haplogroups using *haplogrep*.
+- How to sample a given number *n* sequences for each haplogroup.
+
+## Fetching mtDNA sequences
+
+Here, I will query the [NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/) to retrieve all the *Homo Sapiens* mtDNA sequences.
+
+First, we load the *mitor* package.
+
+```{r loading, eval=FALSE}
+library(mitor)
+```
+
+After the package is loaded, we now define a query to fetch *Homo Sapiens* mtDNA sequences from the [NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/). For more information regarding the query structure check their [website](https://www.ncbi.nlm.nih.gov/books/NBK44863/).
+
+```{r query, eval=FALSE}
+query <-
+  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]" 
+```
+
+The query I am using has several filters:
+
+- **(016500[SLEN]:016600[SLEN])** specifies that I want only sequences with length between 16500 and 16600 bases.
+- **mitochondrion[FILT]** specifies to include only mitochondrial sequences.
+- **txid9606[orgn]** specifies that the sequences have to belong to *Homo Sapiens*.
+- **NOT txid63221[orgn] NOT txid741158[orgn]** specifies to not include the *Homo Sapiens* subspecies *Neanderthals* and *Denisovans*.
+- **NOT NC_012920.1[accn]** specifies to not include the revised Cambridge Reference Sequence, since it already comes with *mitor*.
+
+Now, we can retrieve the sequences using the *fetch_seq* function. To fetch all the sequences corresponding to the query it is enough to not specify any *n*.
+
+```{r fetch, eval=FALSE}
+# Define name of direcotry where to save the sequences
+dir_path <- "data"
+# Define the filename
+filename <- "hs_mtDNA"
+fetch_seq(query = query,
+          dir_path = dir_path,
+          filename = filename)
+```
