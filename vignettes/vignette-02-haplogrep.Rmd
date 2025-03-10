@@ -56,3 +56,49 @@ fetch_seq(query = query,
           dir_path = dir_path,
           filename = filename)
 ```
+
+## Running haplogrep
+
+To classify the haplogroups of the downloaded sequences, we first need to load the sequences.
+
+```{r haplogrep, eval=FALSE}
+my_seqs <- Biostrings::readDNAStringSet(paste0(dir_path, filename))
+```
+
+At this point, we can simply run the function *classify_haplogroup* on the loaded sequences. Sequences containing IUPAC ambiguities characters not accepted by *haplogrep* will be removed.
+
+```{r, eval=FALSE}
+haplogroups_df <- classify_haplogroup(my_seqs)
+```
+
+The resulting data frame looks like this:
+
+        SampleID   Haplogroup Rank Quality             Range
+    1   DQ856316.1        HV1b2    1  1.0000           1-16569
+    2   EU603401.1        K1a4a    1  0.9272           1-16569
+    3   KX681447.1          H7e    1  0.9610           1-16569
+    4   KX702230.1           H7    1  0.8705           1-16569
+
+*SampleID* corresponds to the name of the sequence, *Haplogroup* to the haplogroup assigned to it by *haplogrep*, *Quality* to the confidence of the classification. Do not consider *Rank* and *Range*.
+We can now use this table to sample sequences according to the haplogroup.
+
+## Sampling sequences
+
+If we are, for example, interesting in sampling 5 sequences per haplogroup we can proceed as follow.
+
+```{r, eval=FALSE}
+# Filter sequences according to the quality of classification (arbitrary)
+haplogroups_df <- haplogroups_df %>% dplyr::filter(Quality>0.85)
+# Consider only the macro haplogroup (first letter)
+haplogroups_df$Haplogroup <- as.factor(strtrim(haplogroups_df$Haplogroup, 1))
+# Sample 5 sequences per haplogroup (if available)
+sampled_seqs_df <- haplogroups_df %>%
+  dplyr::group_by(Haplogroup) %>%
+  dplyr::slice_sample(n = min(n(), 5))
+# Subset the my_seqs
+sampled_seqs <- my_seqs[sampled_seqs_df$SampleID]
+
+```
+
+Now, *sampled_seqs* contains 5 sequences (if available) per haplogroup. It  is up to you how you can use them!
+
