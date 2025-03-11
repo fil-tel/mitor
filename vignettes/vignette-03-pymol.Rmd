@@ -1,8 +1,8 @@
 ---
-title: "3D visualisation of variants using PyMol"
+title: "3D visualisation of variant sites using PyMol"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{3D visualisation of variants using PyMol}
+  %\VignetteIndexEntry{3D visualisation of variant sites using PyMol}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,6 +14,38 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+In this vignette, I will show a basic workflow to identify and map the non-synonymous variant sites of mitochondrial protein in a given MSA to the 3D structure of the corresponding electron transport chain complexes.
+
+As usual, we first load the package.
+
+```{r setup, eval=FALSE}
 library(mitor)
 ```
+
+
+Now, we load our multiple sequence alignment and we extract the coding sequences from it ([See this vignette]("doc/vignette-01-basics.html") for more detals).
+).
+
+```{r, eval=FALSE}
+my_msa <- Biostrings::readDNAStringSet("my_msa.fa")
+# Adjust coordinates
+adj_coord_df <- genes_coord(my_msa)
+cds <- extract_cds(my_msa, adj_coord_df)
+# Translate them into amino acid seqeunces
+proteins <- lapply(cds, translation)
+```
+
+At this point, we need to find the variable sites and convert them into coordinates, in order for them to be mappable.
+
+```{r, eval=FALSE}
+variants_coord <- get_coords(proteins)
+```
+
+Now, we need to decide which complex we are interested in visualizing (I, III, IV, V). I will pick complex I. Using the function *map_variants*, I can map them. This will initialize a PyMol session and the variants sites are highlighted in red.
+
+```{r, eval=FALSE}
+map_variants(variants = variants_coord, complex = "I")
+```
+
+**Done!** You can now play around with them using PyMol! 
+

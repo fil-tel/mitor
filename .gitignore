@@ -6,3 +6,5 @@
 .quarto
 .curl.txt
 inst/doc
+/doc/
+/Meta/

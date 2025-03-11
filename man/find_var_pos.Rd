@@ -4,13 +4,15 @@
 \alias{find_var_pos}
 \title{Find Non Conserved Columns in a Multiple Sequence Alignment (MSA)}
 \usage{
-find_var_pos(msa, type = "AA")
+find_var_pos(msa, type = "AA", t = NULL)
 }
 \arguments{
 \item{msa}{A multiple sequence alignment object, a \code{DNAStringSet}
 from the \code{Biostrings} package.}
 
 \item{type}{String. Type of MSA, amino acids ("AA") or nucleotides ("DNA").}
+
+\item{t}{Double. Frequency threshold, select positions in the MSA which its most conserved amino acid/nucleotide has a frequency of at most \emph{t}.}
 }
 \value{
 Matrix. The function returns a matrix that looks like this. The names of the columns coresponds to the
@@ -24,7 +26,7 @@ seq2 "C" "G" "A" "G" "T" "G" "C" "A" "T" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"
 seq3 "T" "G" "A" "G" "T" "G" "C" "A" "T" "G" "G" "T" "G" "A" "C" "A" "T" "C" "T" "G" "T" "A" "G" "A" "T"
 }
 \description{
-This function finds and extracts the non conserved columns in a MSA.
+This function finds and extracts the non conserved columns in a MSA. It is possible to set a threshold to select only sites that show a certain degree of variations on the MSA.
 }
 \examples{
 \dontrun{
