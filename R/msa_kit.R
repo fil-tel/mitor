@@ -281,7 +281,8 @@ translation <- function(msa) {
     cat(
       "Removed sequences with IDs because of gaps or nonsense mutations:\n",
       unlist(ids2rm),
-      unlist(pids2rm)
+      unlist(pids2rm),
+      "\n"
     )
   prots[setdiff(names(msa), pids2rm)]
 }

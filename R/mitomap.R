@@ -148,3 +148,5 @@ search_allele <- function(pos=NULL){
 # ex <- fromJSON(s)
 # ex
 
+
+

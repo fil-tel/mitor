@@ -186,3 +186,25 @@
 #'
 #'
 "complexV_coord"
+
+#' Reported and Confirmed Mitochondrial Associated Disease Mutations
+#'
+#' This data frame contains information about reported and confirmed mitochondrial associated disease mutations in control and coding regions
+#' as reported by [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl).
+#'
+#' @details
+#' Visit [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl) for more and clear details.
+#'
+#'
+"disease_cds_df"
+
+#' Reported and Confirmed Mitochondrial Associated Disease Mutations
+#'
+#' This data frame contains information about reported and confirmed mitochondrial associated disease mutations in RNA regions
+#' as reported by [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl).
+#'
+#' @details
+#' Visit [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl) for more and clear details.
+#'
+#'
+"disease_rna_df"
