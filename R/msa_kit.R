@@ -210,6 +210,31 @@ extract_cds <- function(msa, coord_df) {
   cds_list
 }
 
+get_ids <- function(cds_msa){
+  ids <- c()
+  # matrix of the variale positions
+  var_mat <- find_var_pos(cds_msa, type = "DNA")
+  ids <- apply(var_mat, 2, function(x){
+    if(x["NC_012920"]=="-"){
+      c(ids, names(x[x!="-"]))
+    } else if("-" %in% unique(x)){
+      c(ids, names(x[x=="-"]))
+    }
+  })
+  unique(ids)
+}
+
+get_stop_ids <- function(prot_msa){
+  ids <- c()
+  # matrix of the variale positions
+  var_mat <- find_var_pos(prot_msa)
+  ids <- apply(var_mat, 2, function(x){
+    if("*" %in% x){
+      c(ids, names(x[x=="*"]))
+    }
+  })
+  unique(ids)
+}
 
 #' Translate MSA Corresponding to a CDS
 #'
@@ -225,6 +250,8 @@ extract_cds <- function(msa, coord_df) {
 #' @note
 #' CDS MSA containing gaps are not reccomended for this function.
 translation <- function(msa) {
+  ids2rm <- get_ids(msa)
+  msa <- msa[setdiff(names(msa), ids2rm)]
   # ungapped msa, the presence of gaps messes up the translation
   ungapped <- Biostrings::DNAStringSet(gsub("-", "", msa))
   widths <- Biostrings::width(ungapped)
@@ -242,11 +269,15 @@ translation <- function(msa) {
   prot2trans <-
     Biostrings::subseq(ungapped, start = 1, end = n_codons * 3)
   # translate
-  Biostrings::translate(
+  prots <- Biostrings::translate(
     prot2trans,
     genetic.code = Biostrings::getGeneticCode("2"),
     if.fuzzy.codon = "X"
   )
+
+  pids2rm <- get_stop_ids(prots)
+  cat("Removed sequences with IDs because of gaps or nonsense mutations:\n", ids2rm, pids2rm)
+  prots[setdiff(names(msa), pids2rm)]
 }
 
 

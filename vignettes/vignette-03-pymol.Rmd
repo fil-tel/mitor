@@ -23,7 +23,7 @@ library(mitor)
 ```
 
 
-Now, we load our multiple sequence alignment and we extract the coding sequences from it ([See this vignette]("doc/vignette-01-basics.html") for more detals).
+Now, we load our multiple sequence alignment and we extract the coding sequences from it ([See this vignette](vignette-01-basics.html) for more detals).
 ).
 
 ```{r, eval=FALSE}
