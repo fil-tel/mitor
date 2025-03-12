@@ -208,3 +208,16 @@
 #'
 #'
 "disease_rna_df"
+
+#' Multiple Sequence Alignment of Human mtDNA
+#'
+#' This *DNAStringSet* corresponds to a multiple sequence alignment of the rCRS and the first 300 mtDNA sequences corresponding to the query:
+#'
+#' "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]"
+#'
+#' and fetched with the *fetch_mtdna* function. It has been aligned using Clustal Omega.
+#'
+#' @details
+#'  It can be used as an example to see how the package works.
+#'
+"my_msa"

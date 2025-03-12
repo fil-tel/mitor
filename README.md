@@ -162,33 +162,117 @@ features will definitely not work on other Operating Systems.
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to address some common
+problems:
 
 ``` r
 library(mitor)
-## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+I now define a query to fetch *Homo Sapiens* mtDNA sequences from the
+[NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/).
+For more information regarding the query structure check their
+[website](https://www.ncbi.nlm.nih.gov/books/NBK44863/).
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+query <-
+  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]"
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+And using the *fetch_seq* function I fetch the first 300 sequences.
 
-You can also embed plots, for example:
+``` r
+path <- "data"
+fetch_seq(query = query, dir_path = path, filename = "hs_mtdna.fa", n = 300)
+```
 
-<img src="man/figures/README-pressure-1.pngpressure-1.png" width="100%" />
+I now load them and I save them adding the Cambridge Reference Sequence,
+that comes with the package.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+``` r
+# Add the rCRS to the set of sequences 
+seqs2align <- c(rCRS, hs_seqs)
+# To save the sequences on a fasta file
+Biostrings::writeXStringSet(x = seqs2align, filepath = "data/hs_mtdna.fa")
+```
+
+After performing a multiple sequence alignment, I load it in the
+session. *mitor* comes already with an *DNAStringSet* object that
+corresponds with this example.
+
+``` r
+my_msa
+#> DNAStringSet object of length 301:
+#>       width seq                                             names               
+#>   [1] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG NC_012920
+#>   [2] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PV166900.1
+#>   [3] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PV166899.1
+#>   [4] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PV166898.1
+#>   [5] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PV166897.1
+#>   ...   ... ...
+#> [297] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PQ306096.1
+#> [298] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PQ306095.1
+#> [299] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PQ306092.1
+#> [300] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PQ306091.1
+#> [301] 16592 GATCACAGGTCTATCACCCTAT...CCTTAAATAAGACATCACGATG PQ306090.1
+```
+
+I can now for example extract the variants between the Cambridge
+Reference Sequence and a certain sequence in the alignment
+(e.g. PV166900.1).
+
+``` r
+ex_var <- find_variants(my_msa, target = "PV166900.1")
+head(ex_var)
+#>   Position    Mutation         Type  Ref  Alt
+#> 1       73       73A>G Substitution    A    G
+#> 2      199      199T>C Substitution    T    C
+#> 3      263      263A>G Substitution    A    G
+#> 4      309 309_310insT    Insertion <NA>    T
+#> 5      310     310delT     Deletion    T <NA>
+#> 6      482      482T>C Substitution    T    C
+```
+
+I am now interested in identifying and visualizing the variable position
+of the residues in the mitochondrial protein subunits of the respiratory
+complex I.
+
+``` r
+# Identify the coordinates of the genes in the MSA
+coord_df <- genes_coord(my_msa)
+# Extract the genes corresponding to coding sequences
+cds <- extract_cds(my_msa, coord_df)
+# Translate them into amino acid sequences
+protein <- lapply(cds, translation)
+```
+
+Now we can identify the coordinates of the variable sites.
+
+``` r
+var_coords <- get_coords(protein)
+head(var_coords)
+#>   Protein Pos ChainID       x       y       z location
+#> 1 MT-ATP6 106       N -15.896 -20.082  -5.560 membrane
+#> 2 MT-ATP6  11       N -26.794  -4.253   4.743 membrane
+#> 3 MT-ATP6 112       N -13.009 -24.642 -14.058   matrix
+#> 4 MT-ATP6  16       N -38.242  -2.791   7.075 membrane
+#> 5 MT-ATP6 161       N -13.706  -7.124  -1.564 membrane
+#> 6 MT-ATP6 174       N -11.154  12.763   2.992 membrane
+```
+
+And use the function *map_variants* to visualize them.
+
+``` r
+map_variants(variants = var_coords, complex = "I")
+```
+
+This will open the GUI of a PyMol session with the variable sites
+highlighted in red.
+
+<figure>
+<img src="man/figures/compI.png"
+alt="my_msa variable sites for the mitochondrial protein subunits of the respiratory complexI (in red)" />
+<figcaption aria-hidden="true"><em>my_msa</em> variable sites for the
+mitochondrial protein subunits of the respiratory complexI (in
+red)</figcaption>
+</figure>

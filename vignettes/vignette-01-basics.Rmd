@@ -35,7 +35,7 @@ After the package is loaded, we now define a query to fetch *Homo Sapiens* mtDNA
 
 ```{r query, eval=FALSE}
 query <-
-  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]" 
+  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]"
 ```
 
 The query I am using has several filters:
@@ -65,7 +65,7 @@ Now we can load the downloaded sequences using *Biostrings*.
 hs_seqs <- Biostrings::readDNAStringSet("data/hs_mtDNA.fa")
 ```
 
-We are now interesting in performing a multiple sequence alignment (MSA) and identifying the genes' coordinates in it. To do so, we will need to include in our set of sequences a reference sequence. I will use the revised Cambridge Reference Sequence (rCRS), that it's the accepted reference standard for human mitochondrial DNA. This sequence come with the package (its varaible name is *rCRS*, and there is no need to download it (that's why I excluded it in the query).
+We are now interesting in performing a multiple sequence alignment (MSA) and identifying the genes' coordinates in it. To do so, we will need to include in our set of sequences a reference sequence. I will use the revised Cambridge Reference Sequence (rCRS), that it's the accepted reference standard for human mitochondrial DNA. This sequence come with the package (its variable name is *rCRS*, and there is no need to download it (that's why I excluded it in the query).
 
 ```{r, eval=FALSE}
 # Add the rCRS to the set of sequences 

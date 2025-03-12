@@ -112,25 +112,76 @@ Once on the main page, open the Web Developer Tools right-clicking anywhere in t
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to address some common problems:
+
+```{r, echo=FALSE, message=FALSE}
+devtools::load_all()
+```
 
 ```{r example}
 library(mitor)
-## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+I now define a query to fetch *Homo Sapiens* mtDNA sequences from the [NCBI Nucleotide database](https://www.ncbi.nlm.nih.gov/nucleotide/). For more information regarding the query structure check their [website](https://www.ncbi.nlm.nih.gov/books/NBK44863/).
 
-```{r cars}
-summary(cars)
+```{r query}
+query <-
+  "(016500[SLEN]:016600[SLEN]) AND mitochondrion[FILT] AND txid9606[orgn] NOT txid63221[orgn] NOT txid741158[orgn] NOT NC_012920.1[accn]"
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+And using the *fetch_seq* function I fetch the first 300 sequences.
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r, eval=FALSE}
+path <- "data"
+fetch_seq(query = query, dir_path = path, filename = "hs_mtdna.fa", n = 300)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+I now load them and I save them adding the Cambridge Reference Sequence, that comes with the package.
+
+```{r, eval=FALSE}
+# Add the rCRS to the set of sequences 
+seqs2align <- c(rCRS, hs_seqs)
+# To save the sequences on a fasta file
+Biostrings::writeXStringSet(x = seqs2align, filepath = "data/hs_mtdna.fa")
+```
+
+After performing a multiple sequence alignment, I load it in the session. *mitor* comes already with an *DNAStringSet* object that corresponds with this example.
+
+```{r}
+my_msa
+```
+
+I can now for example extract the variants between the Cambridge Reference Sequence and a certain sequence in the alignment (e.g. PV166900.1).
+
+```{r}
+ex_var <- find_variants(my_msa, target = "PV166900.1")
+head(ex_var)
+```
+
+I am now interested in identifying and visualizing the variable position of the residues in the mitochondrial protein subunits of the respiratory complex I.
+
+```{r, message=FALSE, results='hide'}
+# Identify the coordinates of the genes in the MSA
+coord_df <- genes_coord(my_msa)
+# Extract the genes corresponding to coding sequences
+cds <- extract_cds(my_msa, coord_df)
+# Translate them into amino acid sequences
+protein <- lapply(cds, translation)
+```
+
+Now we can identify the coordinates of the variable sites.
+
+```{r}
+var_coords <- get_coords(protein)
+head(var_coords)
+```
+
+And use the function *map_variants* to visualize them.
+
+```{r, eval=FALSE}
+map_variants(variants = var_coords, complex = "I")
+```
+This will open the GUI of a PyMol session with the variable sites highlighted in red.
+
+![*my_msa* variable sites for the mitochondrial protein subunits of the  respiratory complexI (in red)](man/figures/compI.png)
+
