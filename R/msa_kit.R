@@ -321,11 +321,13 @@ check_gaps <- function(msa) {
 #' @param ref String. Name of the reference sequence in the MSA.
 #'            Defaults to `"NC_012920"`.
 #'
-#' @return A character vector containing the identified variations between the target and reference
+#' @return A data frame containing the identified variations between the target and reference
 #'         sequences. Variations are described using the following formats:
 #'         - Substitutions: `<position><reference_base>><target_base>` (e.g., "123A>G").
 #'         - Insertions: `<start_position>_<end_position>ins<bases>` (e.g., "123_124insAT").
 #'         - Deletions: `<start_position>_<end_position>del<bases>` (e.g., "123_125delGTC").
+#'
+#'         Returns *NULL* if no variants are detected.
 #'
 #' @details
 #' Positions are adjusted to match the reference sequence, accounting for gaps introduced
@@ -347,8 +349,10 @@ find_variants <- function(msa, target, ref = "NC_012920") {
   seqs <- as.matrix(msa[c(ref, target)])
   variants_list <- apply(seqs, 2, unique)
   gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
-  if (gaps == -1)
-    gaps <- NULL
+  print(gaps)
+  if(length(gaps)==1)
+    if (gaps == -1)
+      gaps <- NULL
   mutations <- c()
   i <- 1
   # variants_list
@@ -444,7 +448,9 @@ find_variants <- function(msa, target, ref = "NC_012920") {
       i <- i + 1
     }
   }
-  mutations
+  if(is.null(mutations)) NULL
+  else  mutations2df(mutations)
+
 }
 
 #' Identify Sequence Variations in Multiple Sequence Alignment (MSA)
@@ -460,11 +466,13 @@ find_variants <- function(msa, target, ref = "NC_012920") {
 #' @param ref String. Name of the reference sequence in the MSA.
 #'            Defaults to `"NC_012920"`.
 #'
-#' @return A character vector containing the identified variations between the target and reference
+#' @return A data frame containing the identified variations between the target and reference
 #'         sequences. Variations are described using the following formats:
 #'         - Substitutions: `<position><reference_base>><target_base>` (e.g., "123A>G").
 #'         - Insertions: `<start_position>_<end_position>ins<bases>` (e.g., "123_124insAT").
 #'         - Deletions: `<start_position>_<end_position>del<bases>` (e.g., "123_125delGTC").
+#'
+#'        Returns *NULL* if no variants are detected.
 #'
 #' @details
 #' Positions are adjusted to match the reference sequence, accounting for gaps introduced
@@ -480,8 +488,9 @@ find_variants_AA <- function(msa, target, ref = "NC_012920") {
   seqs <- as.matrix(msa[c(ref, target)])
   variants_list <- apply(seqs, 2, unique)
   gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
-  if (gaps == -1)
-    gaps <- NULL
+  if (length(gaps)==1)
+    if (gaps == -1)
+      gaps <- NULL
   mutations <- c()
   i <- 1
   # variants_list
@@ -577,9 +586,74 @@ find_variants_AA <- function(msa, target, ref = "NC_012920") {
       i <- i + 1
     }
   }
-  mutations
+  if(is.null(mutations)) NULL
+  else  aavar2df(mutations)
 }
 
+
+aavar2df <- function(mutations) {
+  position <-
+    as.numeric(gsub("[^0-9]", "", mutations))
+
+  reference_aa <-
+    sub(".*([A-Z])>.*", "\\1", mutations)
+  alternative_aa <-
+    sub(".*>([A-Z])", "\\1", mutations)
+
+  mutation_df <-
+    data.frame(
+      Position = position,
+      Mutation = mutations,
+      Type = "Substitution",
+      Ref = reference_aa,
+      Alt = alternative_aa
+    )
+
+  mutation_df
+}
+
+mutations2df <- function(mutations) {
+
+  mutation_type <- ifelse(grepl("ins", mutations),
+                          "Insertion",
+                          ifelse(grepl("del", mutations), "Deletion", "Substitution"))
+
+  position <- as.numeric(gsub("[^0-9].*", "", mutations))
+
+
+  reference_base <-
+    ifelse(
+      grepl(">", mutations),
+      sub(".*([ACGT])>.*", "\\1", mutations),
+      ifelse(
+        grepl("del", mutations),
+        sub(".*del([ACGT])", "\\1", mutations),
+        NA
+      )
+    )
+
+  alternative_base <-
+    ifelse(
+      grepl(">", mutations),
+      sub(".*>([ACGT])", "\\1", mutations),
+      ifelse(
+        grepl("ins", mutations),
+        sub(".*ins([ACGT])", "\\1", mutations),
+        NA
+      )
+    )
+
+  mutation_df <-
+    data.frame(
+      Position = position,
+      Mutation = mutations,
+      Type = mutation_type,
+      Ref = reference_base,
+      Alt = alternative_base
+    )
+
+  mutation_df
+}
 #' Find Non Conserved Columns in a Multiple Sequence Alignment (MSA)
 #'
 #' This function finds and extracts the non conserved columns in a MSA. It is possible to set a threshold to select only sites that show a certain degree of variations on the MSA.
