@@ -718,3 +718,42 @@ find_var_pos <- function(msa, type = "AA", t = NULL) {
   }
 
 }
+
+
+#' Detect Reported and Confirmed Disease Associated Mutation
+#'
+#' This function detects if a target sequence presents confirmed or reported mutation associated with mitochondrial diseases in control and coding regions.
+#' The mutations that are checked can be found in the [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl) database.
+#'
+#' @param msa A multiple sequence alignment object, a `DNAStringSet`
+#'            from the `Biostrings` package.
+#' @param target Character. Name of target sequence.
+#'
+#' @return Data frame with detected mutations. *NULL* if none
+#' @export
+#'
+detect_disease_cds <- function(msa, target){
+  cds_res <- find_variants(msa, target)
+  if(!is.null(cds_res))
+    merge(disease_cds_df, cds_res)
+  else NULL
+}
+
+#' Detect Reported and Confirmed Disease Associated Mutation
+#'
+#' This function detects if a target sequence presents confirmed or reported mutation associated with mitochondrial diseases in rRNAs and tRNAs.
+#' The mutations that are checked can be found in the [MITOMAP](https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsRNA) database.
+#'
+#' @param msa A multiple sequence alignment object, a `DNAStringSet`
+#'            from the `Biostrings` package.
+#' @param target Character. Name of target sequence.
+#'
+#' @return Data frame with detected mutations. *NULL* if none
+#' @export
+#'
+detect_disease_rna <- function(msa, target){
+  rna_res <- find_variants(msa, target)
+  if(!is.null(rna_res))
+    merge(disease_rna_df, rna_res)
+  else NULL
+}
