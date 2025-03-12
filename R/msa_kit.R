@@ -349,7 +349,6 @@ find_variants <- function(msa, target, ref = "NC_012920") {
   seqs <- as.matrix(msa[c(ref, target)])
   variants_list <- apply(seqs, 2, unique)
   gaps <- unlist(gregexpr("-", as.character(msa[[ref]])))
-  print(gaps)
   if(length(gaps)==1)
     if (gaps == -1)
       gaps <- NULL
