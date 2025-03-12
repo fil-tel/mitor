@@ -151,10 +151,10 @@ After performing a multiple sequence alignment, I load it in the session. *mitor
 my_msa
 ```
 
-I can now for example extract the variants between the Cambridge Reference Sequence and a certain sequence in the alignment (e.g. PV166900.1).
+I can now for example extract the variants between the Cambridge Reference Sequence and a certain sequence in the alignment (e.g. PQ306091.1).
 
 ```{r}
-ex_var <- find_variants(my_msa, target = "PV166900.1")
+ex_var <- find_variants(my_msa, target = "PQ306091.1")
 head(ex_var)
 ```
 

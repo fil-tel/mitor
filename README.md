@@ -219,18 +219,18 @@ my_msa
 
 I can now for example extract the variants between the Cambridge
 Reference Sequence and a certain sequence in the alignment
-(e.g. PV166900.1).
+(e.g. PQ306091.1).
 
 ``` r
-ex_var <- find_variants(my_msa, target = "PV166900.1")
+ex_var <- find_variants(my_msa, target = "PQ306091.1")
 head(ex_var)
-#>   Position    Mutation         Type  Ref  Alt
-#> 1       73       73A>G Substitution    A    G
-#> 2      199      199T>C Substitution    T    C
-#> 3      263      263A>G Substitution    A    G
-#> 4      309 309_310insT    Insertion <NA>    T
-#> 5      310     310delT     Deletion    T <NA>
-#> 6      482      482T>C Substitution    T    C
+#>   Position Mutation         Type Ref  Alt
+#> 1       35    35G>A Substitution   G    A
+#> 2       36    36G>A Substitution   G    A
+#> 3       73    73A>G Substitution   A    G
+#> 4      143   143G>A Substitution   G    A
+#> 5      263   263A>G Substitution   A    G
+#> 6      303  303delC     Deletion   C <NA>
 ```
 
 I am now interested in identifying and visualizing the variable position
