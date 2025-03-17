@@ -56,8 +56,11 @@ cmd.deselect()
 
 for chain in np.unique(df["ChainID"]):
         ress="+".join(str(v) for v in df["Pos"][df["ChainID"]==chain].to_list())
-        cmd.color("red", "chain " + chain + " and resi " + ress)
-
+        name_sel = str(np.unique(df[df["ChainID"]==chain]["Protein"])[0])
+        # name_sel=name_sel.replace("-", "_")
+        cmd.select(name_sel, "chain " + chain + " and resi " + ress)
+        cmd.color("red", name_sel)
+cmd.deselect()
 
 
 
