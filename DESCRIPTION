@@ -15,17 +15,14 @@ Imports:
     Biostrings,
     dplyr,
     GenomicFeatures,
-    ggplot2,
     magrittr,
-    msa,
     rentrez,
     seqinr,
     stringr,
     future,
     rvest,
     httr
-Remotes:
-    gmbecker/genbankr
+
 Depends: 
     R (>= 2.10)
 LazyData: true
