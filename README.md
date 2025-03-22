@@ -56,8 +56,7 @@ devtools::install_github("fil-tel/mitor")
 
 **Note:** to ensure that *mitor* works correctly it is recommended to
 manually install *Biostrings* from
-[Bioconductor](https://www.bioconductor.org/) and *genbankr* from
-[Github](https://github.com/gmbecker/genbankr) using the following
+[Bioconductor](https://www.bioconductor.org/) using the following
 commands:
 
 ``` r
@@ -66,12 +65,6 @@ if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 BiocManager::install("Biostrings")
-```
-
-``` r
-# Installation of genbankr
-# install.packages("devtools")
-devtools::install_github("gmbecker/genbankr")
 ```
 
 ## External software
