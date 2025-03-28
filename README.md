@@ -54,9 +54,9 @@ using the following commands:
 devtools::install_github("fil-tel/mitor")
 ```
 
-**Note:** to avoid errors with the Bioconductor dependencies, it is
-recommended to install them manually before installing *mitor* using the
-following commands:
+**Note:** to ensure a smooth installation of *mitor*, it is recommended
+to install the Bioconductor dependencies manually before installing
+*mitor* using the following commands:
 
 ``` r
 # Installation of BiocManager
