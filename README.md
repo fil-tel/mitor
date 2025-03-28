@@ -54,17 +54,15 @@ using the following commands:
 devtools::install_github("fil-tel/mitor")
 ```
 
-**Note:** to ensure that *mitor* works correctly it is recommended to
-manually install *Biostrings* from
-[Bioconductor](https://www.bioconductor.org/) using the following
-commands:
+**Note:** to avoid errors with the Bioconductor dependencies, it is
+recommended to install them manually before installing *mitor* using the
+following commands:
 
 ``` r
-# Installation of Biostrings
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install("Biostrings")
+# Installation of BiocManager
+install.packages("BiocManager")
+BiocManager::install(version = "3.20")
+BiocManager::install(c("Biostrings", "GenomicFeatures", "rentrez", "seqinr"))
 ```
 
 ## External software
