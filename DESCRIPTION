@@ -3,7 +3,7 @@ Title: Identifying and 3D Visualising Human Mitochondrial Sequence Variants
 Version: 0.0.0.9000
 Authors@R: 
     person("Filippo", "Tell", , "filippo.tell2000@gmail.com", role = c("aut", "cre"))
-Description: A tool for analysis, visualization, and interpratation of mitochondrial DNA data, mainly designed for human mitochondrial DNA.
+Description: A tool for handling, visualization, and interpratation of mitochondrial DNA data, mainly designed for human mitochondrial DNA.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
