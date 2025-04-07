@@ -70,7 +70,7 @@ get_coords <-
       for (name in names(ls)) {
         df <- ls[[name]]
         if (!is.null(df)) {
-          print(nrow(df))
+          # print(nrow(df))
           prot_df <-
             rbind(prot_df, cbind(data.frame("Protein" = rep(
               paste0("MT-", name), nrow(df)
